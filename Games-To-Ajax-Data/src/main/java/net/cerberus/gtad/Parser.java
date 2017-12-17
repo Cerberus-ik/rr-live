@@ -62,14 +62,13 @@ class Parser {
             }
         }
         Date date = new Date(this.firstGameTimeStamp);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy ss:mm:HH");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
         System.out.println("First game: " + simpleDateFormat.format(date));
         List<TimeStep> timeSteps = new ArrayList<>();
         for (JSONObject rawGame : this.rawData) {
             long timestamp = rawGame.getJSONObject("game").getLong("timestamp");
             timestamp = timestamp - this.firstGameTimeStamp;
             int id = (int) Math.floorDiv(timestamp, this.time);
-            System.out.println("id: " + id + " " + timestamp + " / " + this.time);
             if (timeSteps.stream().noneMatch(timeStep -> timeStep.id == id)) {
                 TimeStep timeStep = new TimeStep();
                 timeStep.id = id;

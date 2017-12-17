@@ -24,7 +24,7 @@ public class Main {
         StringBuilder stringBuilder = new StringBuilder();
         BufferedReader fileReader;
         try {
-            fileReader = new BufferedReader(new FileReader(new File("resources/key.json")));
+            fileReader = new BufferedReader(new FileReader(new File("resources/config.json")));
             fileReader.lines().forEach(stringBuilder::append);
             fileReader.close();
         } catch (IOException e) {

@@ -4,11 +4,13 @@ current "cool" and "meta" Runes from Runes-Reforged. Everything will be placed o
 scroll through the recent Patches and days.
 
 ### First conceptual design
-![Image](https://github.com/Cerberus-ik/rr-live/blob/master/rr-live.png)
+![Image](https://github.com/Cerberus-ik/rr-live/blob/master/resources/images/rr-live.png)
 
 ### So how does it work?
 If you want an in deep explanation for each Part/Program of this project 
 refer to their respected folders.
+
+![Image](https://github.com/Cerberus-ik/rr-live/blob/master/resources/images/schematic.png)
 
 ##### Step 0: Get some summoners to base the data on
 We started with 5000 Summoners from EUW that are Platinum or higher. 
