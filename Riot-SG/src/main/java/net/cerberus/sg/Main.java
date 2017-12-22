@@ -10,10 +10,7 @@ import net.cerberus.sg.logs.LogReason;
 import net.cerberus.sg.logs.Logger;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 
 public class Main {
 
@@ -37,10 +34,23 @@ public class Main {
             Summoner summoner = riotApi.summonerApi.getSummonerByName(credentials.getJSONObject("sg-config").getString("summoner-name"), region);
             DataFetcher dataFetcher = new DataFetcher(riotApi, summoner, region, summoners, credentials.getJSONObject("sg-config").getInt("coolDownBetweenCalls"));
             dataFetcher.start(credentials.getJSONObject("sg-config").getInt("summonerLimit"));
+            saveData(dataFetcher.getData());
         } catch (RiotApiRequestException e) {
             System.out.println(e.getResponseCode());
             e.printStackTrace();
         } catch (InvalidApiKeyException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveData(JSONObject data) {
+        try {
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File("resources/sg-summoners.json")));
+            bufferedWriter.write(data.toString());
+            bufferedWriter.flush();
+            bufferedWriter.close();
+            Logger.logMessage("Summoners got saved successfully.", LogLevel.INFO, LogReason.SG);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

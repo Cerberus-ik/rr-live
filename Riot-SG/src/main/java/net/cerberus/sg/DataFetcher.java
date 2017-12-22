@@ -20,6 +20,7 @@ import net.cerberus.sg.logs.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -84,7 +85,8 @@ public class DataFetcher {
         }
         this.parseLeagueMembersToJson();
         int finishingSize = this.data.getJSONArray("data").length();
-        Logger.logMessage("Finished with " + finishingSize + " summoners. " + (Math.round((finishingSize / limit) * 100) / 100), LogLevel.INFO, LogReason.SG);
+        DecimalFormat decimalFormat = new DecimalFormat("##.00");
+        Logger.logMessage("Finished with " + finishingSize + " summoners. " + decimalFormat.format(limit / this.data.getJSONArray("data").length()), LogLevel.INFO, LogReason.SG);
     }
 
     private void readData() {
@@ -111,7 +113,10 @@ public class DataFetcher {
                     summonerObject.put("tier", league.getTier());
                     this.data.getJSONArray("data").put(summonerObject);
                 }
-            } catch (RiotApiRequestException | InterruptedException e) {
+            } catch (RiotApiRequestException e) {
+                e.getResponseCode();
+                e.printStackTrace();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         });
@@ -139,5 +144,9 @@ public class DataFetcher {
 
     private boolean isTierAllowed(String tier) {
         return tier.equals("PLATINUM") || tier.equals("CHALLENGER") || tier.equals("DIAMOND") || tier.equals("MASTER");
+    }
+
+    public JSONObject getData() {
+        return data;
     }
 }

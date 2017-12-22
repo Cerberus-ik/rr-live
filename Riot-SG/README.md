@@ -2,6 +2,9 @@
 This part of rr-live feeds the other data gathering parts with summoners.
 We wanted a scalable solution that's why we wrote this program.
 
+After a first test run we managed to get ``92423`` summoners that are platinum or higher.
+
+
 ### How does it work?
 
 #### Step 0 Set the base summoner

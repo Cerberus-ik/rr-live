@@ -1,7 +1,16 @@
 # RR-live
-This is my entry for the riot api dev challenge. My goal is to provide an easy to use and appealing way to see the 
-current "cool" and "meta" Runes from Runes-Reforged. Everything will be placed on an interactive map with the ability to 
-scroll through the recent Patches and days.
+This is our entry for the riot api dev challenge. Our goal is to provide an easy to use and appealing way to see the 
+current "cool" and "meta" Runes from Runes-Reforged and how their popularity shifts over time.  Everything will be placed on an 
+interactive map with the ability to scroll through the recent Patches and days.
+
+### What we expected from our results
+In the first days we expected a strong tendency to pick already known runes. 
+- Electrocute aka Thunder Lord is a big player favorite so it will probably rise in popularity and fall off after players 
+  discover the new runes.
+- To be honest the arcane comet was probably a bit over buffed in 7.23 but after the recent nerves we expect a fall off 
+  in its pick rate for later games.
+- We think that more complicated runes like the unsealed spell book will see a rise in the next weeks. With time players 
+  understand what makes a rune strong and figure out new ways to play it. This is especially true for utility runes.
 
 ### First conceptual design
 ![Image](https://github.com/Cerberus-ik/rr-live/blob/master/resources/images/rr-live.png)
