@@ -18,15 +18,15 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
-    private static DatabaseManager databaseManager;
+    private static long startingTime;
 
     public static void main(String[] args) {
-        databaseManager = new DatabaseManager();
-        databaseManager.connect();
-        databaseManager.truncateDatabase();
+        Logger.logMessage("Starting the GTAD converter.", LogLevel.INFO, LogReason.PARSER);
+        startingTime = System.nanoTime();
         if (args.length < 4) {
             System.out.println("Define the path (--path) to the games directory and the time parts (--time)");
             return;
@@ -49,11 +49,15 @@ public class Main {
         parser.read();
         List<TimeStep> steps = parser.start();
         pushSteps(steps, parser.getFirstGameTimeStamp());
-        databaseManager.closeConnection();
+
         Logger.logMessage("Finished pushing ajax data.", LogLevel.INFO, LogReason.CACHE);
+        Logger.logMessage("The process took: " + TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - startingTime) + " seconds.", LogLevel.INFO, LogReason.CACHE);
     }
 
     private static void pushSteps(List<TimeStep> steps, long firstGame) {
+        DatabaseManager databaseManager = new DatabaseManager();
+        databaseManager.connect();
+        databaseManager.truncateDatabase();
         JSONArray runeIdOrder = getRuneIdsInOrder(dataDragonRunesReforged());
         steps.forEach(step -> {
             JSONObject stepObject = new JSONObject();
@@ -73,6 +77,7 @@ public class Main {
             }
             databaseManager.updateId(step.id, stepObject.toString());
         });
+        databaseManager.closeConnection();
     }
 
 //    private static void pushSteps(List<TimeStep> steps, long firstGame) {
@@ -171,8 +176,9 @@ public class Main {
             return null;
         }
         try {
+            Logger.logMessage("Counting games...", LogLevel.INFO, LogReason.FILE_READER);
             long fileCount = Files.list(Paths.get(file.toURI())).count();
-            System.out.println(fileCount + " files found.");
+            Logger.logMessage(fileCount + " files found.", LogLevel.INFO, LogReason.FILE_READER);
             return file;
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,6 +1,5 @@
 package net.cerberus.gg;
 
-import net.cerberus.gg.db.DatabaseManager;
 import net.cerberus.gg.io.logs.LogLevel;
 import net.cerberus.gg.io.logs.LogReason;
 import net.cerberus.gg.io.logs.Logger;
@@ -14,29 +13,30 @@ import net.cerberus.riotApi.exception.RateLimitException;
 import net.cerberus.riotApi.exception.RiotApiRequestException;
 import org.json.JSONObject;
 
-@SuppressWarnings("Duplicates")
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 public class GameRunnable implements Runnable {
 
     private Summoner summoner;
     private RiotApi riotApi;
     private MatchListMatch matchListMatch;
     private Region region;
-    private DatabaseManager databaseManager;
 
     /**
      * This @{@link Runnable} will get a game from the api, parse it and saves it to a file.
      *
-     * @param summoner        the summoner the game is from. For logging purposes only.
-     * @param riotApi         the api to call.
-     * @param matchListMatch  the match to download and save.
-     * @param databaseManager place to save the games.
+     * @param summoner       the summoner the game is from. For logging purposes only.
+     * @param riotApi        the api to call.
+     * @param matchListMatch the match to download and save.
      */
-    GameRunnable(Summoner summoner, RiotApi riotApi, MatchListMatch matchListMatch, DatabaseManager databaseManager) {
+    GameRunnable(Summoner summoner, RiotApi riotApi, MatchListMatch matchListMatch) {
         this.summoner = summoner;
         this.riotApi = riotApi;
         this.matchListMatch = matchListMatch;
         this.region = Region.parseRegionByPlatformId(matchListMatch.getPlatformId());
-        this.databaseManager = databaseManager;
     }
 
     /**
@@ -62,7 +62,7 @@ public class GameRunnable implements Runnable {
                 jsonGame.put(participant.getParticipantId() + "-lane", participant.getTimeline().getLane());
                 jsonGame.put(participant.getParticipantId() + "-role", participant.getTimeline().getRole());
             });
-            this.save(jsonGame);
+            this.save(jsonGame, this.matchListMatch.getGameId());
             Logger.logMessage("Saving game: " + this.matchListMatch.getGameId() + " from " + this.summoner.getName(), LogLevel.INFO, LogReason.GG);
         } catch (RiotApiRequestException e) {
             if (e.getResponseCode().equals(ResponseCode.RATE_LIMIT_EXCEEDED)) {
@@ -83,8 +83,22 @@ public class GameRunnable implements Runnable {
      * Saves the formatted json to a file.
      *
      * @param jsonGame the formatted data.
+     * @param gameId   the id under which the game gets saved.
      */
-    private void save(JSONObject jsonGame) {
-        this.databaseManager.cacheGame(this.matchListMatch.getGameId(), this.region, jsonGame);
+    private void save(JSONObject jsonGame, long gameId) {
+        try {
+            File file = new File("Z:/libs/resources/games/" + gameId + ".json");
+            /* Use this for testing purposes. */
+            //File file = new File("resources/games/" + gameId + ".json");
+            if (!file.createNewFile()) {
+                Logger.logMessage("File already exists. (" + gameId + ")", LogLevel.WARNING, LogReason.GG);
+            }
+            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+            bufferedWriter.write(jsonGame.toString());
+            bufferedWriter.flush();
+            bufferedWriter.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

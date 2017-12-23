@@ -5,7 +5,6 @@ import net.cerberus.gtad.common.TimeStep;
 import net.cerberus.gtad.io.logs.LogLevel;
 import net.cerberus.gtad.io.logs.LogReason;
 import net.cerberus.gtad.io.logs.Logger;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -20,41 +19,47 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
-class Parser {
+class Parser_OLD {
 
     private File directory;
     private List<JSONObject> rawData;
     private long time;
     private long firstGameTimeStamp;
 
-    Parser(File file, long time) {
+    Parser_OLD(File file, long time) {
         this.directory = file;
         this.time = time;
     }
 
     void read() {
         try {
-            Logger.logMessage("Reading files...", LogLevel.INFO, LogReason.PARSER);
+            Logger.logMessage("Reading files...", LogLevel.INFO, LogReason.CACHE);
             this.rawData = new ArrayList<>();
-            Files.list(Paths.get(this.directory.toURI())).forEach(gameFile -> {
+            /* Removes some false positives that got downloaded for some reason. */
+            Files.list(Paths.get(this.directory.toURI())).filter(path -> {
+                long gameId = Long.parseLong(path.getFileName().toString().substring(0, path.getFileName().toString().indexOf(".")));
+                return gameId >= 3232259758L;
+            }).forEach(gameFile -> {
                 try {
                     BufferedReader bufferedReader = new BufferedReader(new FileReader(gameFile.toFile()));
                     StringBuilder stringBuilder = new StringBuilder();
+                    System.out.println();
                     bufferedReader.lines().forEach(stringBuilder::append);
                     bufferedReader.close();
-                    rawData.add(new JSONObject(stringBuilder.toString()));
-                } catch (IOException | JSONException e) {
-                    System.out.println(gameFile);
+                    this.rawData.add(new JSONObject(stringBuilder.toString()));
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 
     List<TimeStep> start() {
-        Logger.logMessage("Starting to parse the games.", LogLevel.INFO, LogReason.PARSER);
+        System.out.println("Starting to parse the games.");
+        System.out.println();
         this.firstGameTimeStamp = Long.MAX_VALUE;
         for (JSONObject rawDataEntry : this.rawData) {
             if (this.firstGameTimeStamp > rawDataEntry.getJSONObject("game").getLong("timestamp")) {
@@ -81,6 +86,7 @@ class Parser {
                 TreeMap<Integer, Integer> sup = new TreeMap<>();
                 timeStep.usageOfRunes = new TreeMap<>();
                 timeStep.usageOfRunes.put(Role.TOP, top);
+                System.out.println();
                 timeStep.usageOfRunes.put(Role.JUNGLE, jung);
                 timeStep.usageOfRunes.put(Role.MID, mid);
                 timeStep.usageOfRunes.put(Role.ADC, adc);
@@ -97,6 +103,7 @@ class Parser {
 
     private TimeStep addRunesToStep(TimeStep timeStep, JSONObject game) {
         for (int i = 1; i < 11; i++) {
+            System.out.println();
             String lane = game.getString(i + "-lane");
             int runeId = game.getInt(i + "-perk0");
             TreeMap<Integer, Integer> roleRunes = null;
@@ -121,11 +128,13 @@ class Parser {
                             break;
                         case "DUO_SUPPORT":
                             roleRunes = timeStep.usageOfRunes.get(Role.SUPPORT);
+                            System.out.println();
                             break;
                         default:
                             roleRunes = timeStep.usageOfRunes.get(Role.SUPPORT);
                             break;
                     }
+                    System.out.println();
                     break;
                 }
             }
