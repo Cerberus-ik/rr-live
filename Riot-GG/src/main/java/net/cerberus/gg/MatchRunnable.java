@@ -27,6 +27,7 @@ public class MatchRunnable implements Runnable {
      */
     @Override
     public void run() {
+        Main.getGames().add(this.matchListMatch.getGameId());
         try {
             Match match = this.riotApi.matchApi.getMatchById(matchListMatch.getGameId(), Region.parseRegionByPlatformId(matchListMatch.getPlatformId()));
             JSONObject gameObject = this.parseObject(match);

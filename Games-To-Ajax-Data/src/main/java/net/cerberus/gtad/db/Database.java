@@ -1,6 +1,7 @@
 package net.cerberus.gtad.db;
 
 
+import net.cerberus.gtad.common.DatabaseCredentials;
 import net.cerberus.gtad.io.logs.LogLevel;
 import net.cerberus.gtad.io.logs.LogReason;
 import net.cerberus.gtad.io.logs.Logger;
@@ -11,39 +12,20 @@ import java.sql.SQLException;
 
 public class Database {
 
-    private String user;
-    private String database;
-    private String password;
-    private int port;
-    private String hostname;
     private Connection connection;
+    private DatabaseCredentials databaseCredentials;
 
-    Database(String hostname, int port, String database, String username, String password) {
-        this.hostname = hostname;
-        this.port = port;
-        this.database = database;
-        this.user = username;
-        this.password = password;
+    Database(DatabaseCredentials databaseCredentials) {
+        this.databaseCredentials = databaseCredentials;
     }
 
-    Connection connect() {
+    void connect() {
         try {
-            this.connection = DriverManager.getConnection("jdbc:mysql://" + this.hostname + ":" + this.port + "/" + this.database, this.user, this.password);
-            return connection;
+            this.connection = DriverManager.getConnection("jdbc:mysql://" + this.databaseCredentials.getHost() + ":" + this.databaseCredentials.getPort() + "/" + this.databaseCredentials.getDatabase(), this.databaseCredentials.getUser(), this.databaseCredentials.getPassword());
         } catch (SQLException e) {
             Logger.logMessage("An error occurred while connection to the database.", LogLevel.ERROR, LogReason.DB);
             e.printStackTrace();
         }
-        return this.connection;
-    }
-
-    public boolean checkConnection() {
-        try {
-            return connection.isClosed();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
     }
 
     Connection getConnection() {

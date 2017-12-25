@@ -1,14 +1,19 @@
 package net.cerberus.gtad;
 
-import net.cerberus.gtad.common.DatabaseCredentials;
 import net.cerberus.gtad.common.Role;
 import net.cerberus.gtad.common.TimeStep;
-import net.cerberus.gtad.db.SourceDatabaseManager;
 import net.cerberus.gtad.io.logs.LogLevel;
 import net.cerberus.gtad.io.logs.LogReason;
 import net.cerberus.gtad.io.logs.Logger;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,18 +22,35 @@ import java.util.TreeMap;
 
 class Parser {
 
+    private File directory;
     private List<JSONObject> rawData;
     private long time;
     private long firstGameTimeStamp;
-    private SourceDatabaseManager sourceDatabaseManager;
 
-    Parser(DatabaseCredentials databaseCredentials, long time) {
-        this.sourceDatabaseManager = new SourceDatabaseManager(databaseCredentials);
+    Parser(File file, long time) {
+        this.directory = file;
         this.time = time;
     }
 
-    void getData() {
-        this.rawData = sourceDatabaseManager.getGames();
+    void read() {
+        try {
+            Logger.logMessage("Reading files...", LogLevel.INFO, LogReason.PARSER);
+            this.rawData = new ArrayList<>();
+            Files.list(Paths.get(this.directory.toURI())).forEach(gameFile -> {
+                try {
+                    BufferedReader bufferedReader = new BufferedReader(new FileReader(gameFile.toFile()));
+                    StringBuilder stringBuilder = new StringBuilder();
+                    bufferedReader.lines().forEach(stringBuilder::append);
+                    bufferedReader.close();
+                    rawData.add(new JSONObject(stringBuilder.toString()));
+                } catch (IOException | JSONException e) {
+                    System.out.println(gameFile);
+                    e.printStackTrace();
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     List<TimeStep> start() {
@@ -41,7 +63,7 @@ class Parser {
         }
         Date date = new Date(this.firstGameTimeStamp);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-        Logger.logMessage("First game: " + simpleDateFormat.format(date), LogLevel.INFO, LogReason.PARSER);
+        System.out.println("First game: " + simpleDateFormat.format(date));
         List<TimeStep> timeSteps = new ArrayList<>();
         for (JSONObject rawGame : this.rawData) {
             long timestamp = rawGame.getJSONObject("game").getLong("timestamp");

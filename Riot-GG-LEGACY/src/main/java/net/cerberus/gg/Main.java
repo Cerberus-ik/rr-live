@@ -24,6 +24,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("Duplicates")
 public class Main {
 
     private static RiotApi riotApi;

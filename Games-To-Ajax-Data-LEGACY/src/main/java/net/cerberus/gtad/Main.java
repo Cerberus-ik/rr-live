@@ -1,9 +1,8 @@
 package net.cerberus.gtad;
 
-import net.cerberus.gtad.common.DatabaseCredentials;
 import net.cerberus.gtad.common.Role;
 import net.cerberus.gtad.common.TimeStep;
-import net.cerberus.gtad.db.TargetDatabaseManager;
+import net.cerberus.gtad.db.DatabaseManager;
 import net.cerberus.gtad.io.logs.LogLevel;
 import net.cerberus.gtad.io.logs.LogReason;
 import net.cerberus.gtad.io.logs.Logger;
@@ -16,40 +15,49 @@ import org.json.JSONObject;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
 
+    private static long startingTime;
+
     public static void main(String[] args) {
-        Logger.logMessage("Starting the GTAD converter.", LogLevel.INFO, LogReason.GTAD);
-        long startingTime = System.nanoTime();
-        if (args.length < 2) {
-            System.out.println("Define the time parts (--time)");
+        Logger.logMessage("Starting the GTAD converter.", LogLevel.INFO, LogReason.PARSER);
+        startingTime = System.nanoTime();
+        if (args.length < 4) {
+            System.out.println("Define the path (--path) to the games directory and the time parts (--time)");
             return;
         }
         List<String> argsList = Arrays.asList(args);
         int timeId = argsList.indexOf("--time");
+        int pathId = argsList.indexOf("--path");
+        String path = argsList.get(pathId + 1);
         long time = Long.parseLong(argsList.get(timeId + 1));
 
-        if (time == 0) {
-            System.out.println("Define the time parts (--time)");
+        if (path == null || time == 0) {
+            System.out.println("Define the path (--path) to the games directory and the time parts (--time)");
             return;
         }
-        JSONObject config = getGTADConfig();
-        Parser parser = new Parser(getDatabaseCredentials(config.getJSONObject("sourceDatabase")), time);
-        parser.getData();
+        File directory = parsePath(path);
+        if (directory == null) {
+            return;
+        }
+        Parser parser = new Parser(directory, time);
+        parser.read();
         List<TimeStep> steps = parser.start();
-        pushSteps(steps, parser.getFirstGameTimeStamp(), getDatabaseCredentials(config.getJSONObject("targetDatabase")));
+        pushSteps(steps, parser.getFirstGameTimeStamp());
 
-        Logger.logMessage("Finished pushing ajax data.", LogLevel.INFO, LogReason.GTAD);
-        Logger.logMessage("The process took: " + TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - startingTime) + " seconds.", LogLevel.INFO, LogReason.GTAD);
+        Logger.logMessage("Finished pushing ajax data.", LogLevel.INFO, LogReason.CACHE);
+        Logger.logMessage("The process took: " + TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - startingTime) + " seconds.", LogLevel.INFO, LogReason.CACHE);
     }
 
-    private static void pushSteps(List<TimeStep> steps, long firstGame, DatabaseCredentials databaseCredentials) {
-        TargetDatabaseManager targetDatabaseManager = new TargetDatabaseManager(databaseCredentials);
-        targetDatabaseManager.connect();
-        targetDatabaseManager.truncateDatabase();
+    private static void pushSteps(List<TimeStep> steps, long firstGame) {
+        DatabaseManager databaseManager = new DatabaseManager();
+        databaseManager.connect();
+        databaseManager.truncateDatabase();
         JSONArray runeIdOrder = getRuneIdsInOrder(dataDragonRunesReforged());
         steps.forEach(step -> {
             JSONObject stepObject = new JSONObject();
@@ -67,10 +75,49 @@ public class Main {
                 }
                 stepObject.put(role.name(), runesArray);
             }
-            targetDatabaseManager.updateId(step.id, stepObject.toString());
+            databaseManager.updateId(step.id, stepObject.toString());
         });
-        targetDatabaseManager.closeConnection();
+        databaseManager.closeConnection();
     }
+
+//    private static void pushSteps(List<TimeStep> steps, long firstGame) {
+//        File file = new File("Games-To-Ajax-Data/output/data.json");
+//        if (!file.exists()) {
+//            try {
+//                if (!file.createNewFile()) {
+//                    System.out.println("Error while creating the output file.");
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//        JSONObject outputObject = new JSONObject();
+//        outputObject.put("stepSize", steps.get(0).timeStepSize);
+//        outputObject.put("firstGame", firstGame);
+//        steps.forEach(step -> {
+//            JSONObject stepObject = new JSONObject();
+//            stepObject.put("id", step.id);
+//            for (Role role : step.usageOfRunes.keySet()) {
+//                JSONArray runesArray = new JSONArray();
+//                TreeMap<Integer, Integer> runesPerRole = step.usageOfRunes.get(role);
+//                for (Integer runeId : runesPerRole.keySet()) {
+//                    JSONObject runeObject = new JSONObject();
+//                    runeObject.put(String.valueOf(runeId), runesPerRole.get(runeId));
+//                    runesArray.put(runeObject);
+//                }
+//                stepObject.put(role.name(), runesArray);
+//            }
+//            outputObject.put(String.valueOf(step.id), stepObject);
+//        });
+//        try {
+//            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+//            bufferedWriter.write(outputObject.toString());
+//            bufferedWriter.flush();
+//            bufferedWriter.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     private static JSONArray dataDragonRunesReforged() {
         try {
@@ -90,35 +137,6 @@ public class Main {
             e.printStackTrace();
         }
         return new JSONArray();
-    }
-
-    private static DatabaseCredentials getDatabaseCredentials(JSONObject databaseObject) {
-        return new DatabaseCredentials() {
-            @Override
-            public int getPort() {
-                return 3306;
-            }
-
-            @Override
-            public String getHost() {
-                return databaseObject.getString("host");
-            }
-
-            @Override
-            public String getDatabase() {
-                return databaseObject.getString("db");
-            }
-
-            @Override
-            public String getUser() {
-                return databaseObject.getString("db_user");
-            }
-
-            @Override
-            public String getPassword() {
-                return databaseObject.getString("db_pw");
-            }
-        };
     }
 
     private static JSONArray getRuneIdsInOrder(JSONArray runesReforgedData) {
@@ -147,15 +165,24 @@ public class Main {
         return new JSONObject(stringBuilder.toString()).getString("key");
     }
 
-    private static JSONObject getGTADConfig() {
+    private static File parsePath(String path) {
+        if (path == null) {
+            System.out.println("Invalid path");
+            return null;
+        }
+        File file = new File(path);
+        if (!file.isDirectory()) {
+            System.out.println("The specified path is not a valid directory.");
+            return null;
+        }
         try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(new File("resources/config.json")));
-            StringBuilder stringBuilder = new StringBuilder();
-            bufferedReader.lines().forEach(stringBuilder::append);
-            return new JSONObject(stringBuilder.toString()).getJSONObject("gtad-config");
-        } catch (FileNotFoundException e) {
+            Logger.logMessage("Counting games...", LogLevel.INFO, LogReason.FILE_READER);
+            long fileCount = Files.list(Paths.get(file.toURI())).count();
+            Logger.logMessage(fileCount + " files found.", LogLevel.INFO, LogReason.FILE_READER);
+            return file;
+        } catch (IOException e) {
             e.printStackTrace();
         }
-        return new JSONObject();
+        return null;
     }
 }

@@ -22,7 +22,7 @@ refer to their respected folders.
 ![Image](https://github.com/Cerberus-ik/rr-live/blob/master/resources/images/schematic.png)
 
 ### Why are 80% of this project written in java?
-Almost the whole backend is written in java, but why tho? Since we splitted the project into the front end ``(Garry)`` and
+Almost the whole backend is written in java, but why tho? Since we splitted the project into the front end ``Garry`` and
 the backend and data aggregation ``(Cerberus-ik)`` both of us used technologies we are familiar with. I ``(Cerberus-ik)`` 
 mainly work with java and I knew that java could handle every single task we threw at it. ``Garry`` on the other hand worked
 a lot with [MDL](https://getmdl.io/index.html) in the past so it was the obvious choice. We still experimented with new stuff
@@ -70,3 +70,47 @@ As you might have noticed we went full material design here. We wanted to create
 material fits our needs pretty well. We choose [MDL](https://getmdl.io/index.html) from google. A light weight approach of
 implementing material design on your website. 
 The frontend calls our own backend api to get the data in a json format and displays them to the user.
+
+
+### Installation
+If you want to can take any of the programs and make your own changes to them or just try them out for fun.
+You need to create a config.json tho. Put it in a resource folder that is located in the main directory.
+It should look somewhat like this:
+```json
+{
+  "key":"project-api-key",
+  "sg-config": {
+    "summoner-region": "EUW1",
+    "summoner-name": "summonerName",
+    "summonerLimit": 10000,
+    "coolDownBetweenCalls": 0
+  },
+  "gg-config": {
+    "coolDownBetweenCalls": 0,
+    "summonerBulk": 25,
+    "database": {
+      "host": "host",
+      "db": "db",
+      "db_pw": "pw",
+      "db_user": "user"
+    }
+  },
+  "gtad-config": {
+    "sourceDatabase": {
+      "host": "host",
+      "db": "db",
+      "db_pw": "pw",
+      "db_user": "user"
+    },
+    "targetDatabase": {
+      "host": "host",
+      "db": "db",
+      "db_pw": "pw",
+      "db_user": "user"
+    }
+  }
+}
+```
+
+### TODO list
+- mobile support

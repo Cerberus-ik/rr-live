@@ -6,9 +6,12 @@ import net.cerberus.gg.io.logs.LogReason;
 import net.cerberus.gg.io.logs.Logger;
 import net.cerberus.riotApi.api.RiotApi;
 import net.cerberus.riotApi.common.Summoner;
+import net.cerberus.riotApi.common.constants.Queue;
 import net.cerberus.riotApi.common.constants.Region;
+import net.cerberus.riotApi.common.constants.Season;
 import net.cerberus.riotApi.common.match.MatchListMatch;
 import net.cerberus.riotApi.exception.InvalidApiKeyException;
+import net.cerberus.riotApi.exception.RiotApiRequestException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,19 +20,22 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
-@SuppressWarnings("Duplicates")
 public class Main {
 
     private static RiotApi riotApi;
     private static int coolDown;
+    private static List<Long> games;
 
+    @SuppressWarnings("Duplicates")
     public static void main(String[] args) {
+        games = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
         BufferedReader fileReader;
         try {
@@ -43,11 +49,11 @@ public class Main {
         coolDown = configFileObject.getJSONObject("gg-config").getInt("coolDownBetweenCalls");
         JSONObject databaseConfig = configFileObject.getJSONObject("gg-config").getJSONObject("database");
         DatabaseManager databaseManager = new DatabaseManager(
-                databaseConfig.getString("host"),
-                databaseConfig.getString("db"),
                 databaseConfig.getString("db_user"),
-                databaseConfig.getString("db_pw"));
-        databaseManager.connect();
+                databaseConfig.getString("db_pw"),
+                databaseConfig.getString("host"),
+                databaseConfig.getString("db")
+        );
         Logger.logMessage("Connected to database.", LogLevel.INFO, LogReason.DB);
         try {
             riotApi = new RiotApi(configFileObject.getString("key"), 5000);
@@ -65,51 +71,29 @@ public class Main {
         }
         JSONArray jsonSummoners = new JSONObject(stringBuilder.toString()).getJSONArray("data");
         Logger.logMessage(jsonSummoners.length() + " summoners loaded.", LogLevel.INFO, LogReason.GG);
-        gatherData(configFileObject.getJSONObject("gg-config").getInt("summonerBulk"), jsonSummoners, databaseManager);
-        databaseManager.closeConnection();
+        gatherData(jsonSummoners, databaseManager);
     }
 
-    private static void gatherData(int threadSize, JSONArray jsonSummoners, DatabaseManager databaseManager) {
+    private static void gatherData(JSONArray jsonSummoners, DatabaseManager databaseManager) {
+        Random random = new Random();
         while (true) {
             if (jsonSummoners.length() == 0) {
                 break;
             }
-            if (threadSize > jsonSummoners.length()) {
-                threadSize = jsonSummoners.length();
+            int i = random.nextInt(jsonSummoners.length() - 1);
+            JSONObject summonerObject = jsonSummoners.getJSONObject(i);
+            Summoner summoner = getSummoner(summonerObject.getLong("summonerId"), Region.parseRegionByPlatformId(summonerObject.getString("platformId")));
+            if (summoner == null) {
+                continue;
             }
-            ExecutorService executorService = Executors.newFixedThreadPool(threadSize);
-            HashMap<Summoner, Region> summoners = new HashMap<>();
-            for (int i = 0; i < threadSize; i++) {
-                JSONObject summonerObject = jsonSummoners.getJSONObject(i);
-                executorService.submit(new SummonerRunnable(
-                        summonerObject.getLong("summonerId"),
-                        riotApi,
-                        Region.parseRegionByPlatformId(summonerObject.getString("platformId")),
-                        summoners));
-                jsonSummoners.remove(i);
-            }
-            try {
-                executorService.shutdown();
-                executorService.awaitTermination(30, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                Logger.logMessage("A summoner thread is frozen.", LogLevel.ERROR, LogReason.RIOT_API);
-                e.printStackTrace();
-            }
-            Logger.logMessage("Loaded " + summoners.size() + " summoners.", LogLevel.INFO, LogReason.GG);
-            List<MatchListMatch> matchListMatches = new ArrayList<>();
-            executorService = Executors.newFixedThreadPool(threadSize);
-            for (Summoner summoner : summoners.keySet()) {
-                executorService.submit(new MatchListRunnable(summoner, riotApi, summoners.get(summoner), matchListMatches, databaseManager));
-            }
-            try {
-                executorService.shutdown();
-                executorService.awaitTermination(30, TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                Logger.logMessage("A match list match thread is frozen.", LogLevel.ERROR, LogReason.RIOT_API);
-                e.printStackTrace();
+            Logger.logMessage("Getting summoner: " + summoner.getName() + " " + jsonSummoners.length() + " left.", LogLevel.INFO, LogReason.GG);
+            List<MatchListMatch> matchListMatches = getMatchList(summoner, Region.parseRegionByPlatformId(summonerObject.getString("platformId")), databaseManager);
+            if (matchListMatches.size() == 0) {
+                jsonSummoners.remove(0);
+                continue;
             }
             Logger.logMessage("Loading " + matchListMatches.size() + " new matches.", LogLevel.INFO, LogReason.GG);
-            executorService = Executors.newFixedThreadPool(threadSize);
+            ExecutorService executorService = Executors.newFixedThreadPool(matchListMatches.size());
             for (MatchListMatch matchListMatch : matchListMatches) {
                 executorService.submit(new MatchRunnable(matchListMatch, riotApi, databaseManager));
             }
@@ -120,34 +104,57 @@ public class Main {
                 Logger.logMessage("A match thread is frozen.", LogLevel.ERROR, LogReason.RIOT_API);
                 e.printStackTrace();
             }
-            Logger.logMessage("Finished bulk.", LogLevel.INFO, LogReason.GG);
+            jsonSummoners.remove(i);
         }
     }
 
-//    @Deprecated
-//    private static void gatherData(JSONArray jsonSummoners, DatabaseManager databaseManager){
-//        for (int i = 0; i < jsonSummoners.length(); i++) {
-//            sleep();
-//            JSONObject jsonSummoner = jsonSummoners.getJSONObject(i);
-//            Region region = Region.parseRegionByPlatformId(jsonSummoner.getString("platformId"));
-//            try {
-//                Summoner summoner = riotApi.summonerApi.getSummonerById(jsonSummoner.getLong("summonerId"), region);
-//                MatchList matchList = riotApi.matchApi.getMatchListByAccountId(summoner.getAccountId(), region, Queue.TEAM_BUILDER_RANKED_SOLO, null, null, null, null, Season.SEASON2017, null);
-//                List<MatchListMatch> summonerMatches = matchList.getMatches()
-//                        .stream()
-//                        .filter(matchListMatch -> !databaseManager.gameAlreadyCached(matchListMatch.getGameId(), region) && matchListMatch.getTimestamp() > 1511568000000L)
-//                        .collect(Collectors.toList());
-//                ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(summonerMatches.size());
-//                summonerMatches.forEach(summonerMatch -> scheduledExecutorService.execute(new GameRunnable(summoner, riotApi, summonerMatch, databaseManager)));
-//            } catch (RiotApiRequestException e) {
-//                e.printStackTrace();
-//                System.out.println(e.getResponseCode());
-//                System.out.println(jsonSummoner.toString());
-//            }
-//            Logger.logMessage("Summoner " + (i + 1) + " from " + jsonSummoners.length(), LogLevel.INFO, LogReason.GG);
-//        }
-//    }
+    private static List<MatchListMatch> getMatchList(Summoner summoner, Region region, DatabaseManager databaseManager) {
+        try {
+            return riotApi.matchApi.getMatchListByAccountId(
+                    summoner.getAccountId(),
+                    region,
+                    Queue.TEAM_BUILDER_RANKED_SOLO,
+                    null,
+                    null,
+                    null,
+                    null, Season.SEASON2017,
+                    null)
+                    .getMatches()
+                    .stream()
+                    .filter(
+                            matchListMatch ->
+                                    matchListMatch.getTimestamp() > 1511568000000L &&
+                                            !games.contains(matchListMatch.getGameId()) &&
+                                            !databaseManager.isGameCached(matchListMatch.getGameId(), region))
+                    .collect(Collectors.toList());
+        } catch (RiotApiRequestException e) {
+            System.out.println(e.getResponseCode());
+            e.printStackTrace();
+        }
+        return new ArrayList<>();
+    }
 
+    /**
+     * Returns a summoner.
+     *
+     * @param summonerId target summoner id.
+     * @param region     target summoner region.
+     * @return the summoner and null if the user does not exist.
+     */
+    private static Summoner getSummoner(long summonerId, Region region) {
+        try {
+            return riotApi.summonerApi.getSummonerById(summonerId, region);
+        } catch (RiotApiRequestException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * This method was used to slow down the game gathering process.
+     * With a much more powerful api key this is no longer necessary.
+     */
+    @Deprecated
     private static void sleep() {
         if (coolDown <= 0) {
             return;
@@ -157,6 +164,16 @@ public class Main {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * This list keeps track of games that have already been cached this run.
+     * It reduces the load on the database slightly.
+     *
+     * @return all game ids that have been cached.
+     */
+    public static List<Long> getGames() {
+        return games;
     }
 }
 

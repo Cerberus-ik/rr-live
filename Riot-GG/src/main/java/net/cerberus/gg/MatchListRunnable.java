@@ -47,7 +47,7 @@ public class MatchListRunnable implements Runnable {
                     .stream()
                     .filter(
                             matchListMatch ->
-                                    !databaseManager.gameAlreadyCached(matchListMatch.getGameId(), region)
+                                    !databaseManager.isGameCached(matchListMatch.getGameId(), region)
                                             && matchListMatch.getTimestamp() > 1511568000000L)
                     .collect(Collectors.toList()));
         } catch (RiotApiRequestException e) {
