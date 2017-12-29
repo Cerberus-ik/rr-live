@@ -2,6 +2,9 @@
 This is our entry for the riot api dev challenge. Our goal is to provide an easy to use and appealing way to see the 
 current "cool" and "meta" Runes from Runes-Reforged and how their popularity shifts over time. Everything is placed on 
 an interactive map with the ability to scroll through the recent Patches and days.
+The project is currently hosted on our [main site](https://cerberus.my.to/) and on our [backup](http://vent-projects.de/riot-dev/).
+New features will only be present on our main site. If the backend should go down we recommend still trying to access
+the [main site](https://cerberus.my.to/). Since both use one backend api.
 
 ### What we learned from this project and what we plan for the future
 Everything went together quite quickly and we had a prototype up and running in 3-5 hours. The biggest challenge we 
@@ -150,8 +153,8 @@ Nevertheless the config should look somewhat like this:
 ### Whats up with 4k and mobile support?
 Yes we definitely want to implement those two features. Since even riot does not have good 4k support it was not a top 
 priority for us. But we already started implementing 4k support. Lets say it is in an early ``BETA`` stage.
-Mobile support on the other hand is a bit more complicated. The site would look somewhat odd on such small screens. So 
-full mobile support is still somewhat far away. 
+Mobile support on the other hand is a bit more complicated. The site would look somewhat odd on such small screens and 
+would not work in the intended way. So full mobile support is still somewhat far away. 
 
 ### Disclaimer
 RR-Live isn't endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially 
