@@ -1,0 +1,44 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Angular Material style sheet -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.css">
+    <link rel="stylesheet" href="resources/css/index.css">
+    <title>RR-Live</title>
+
+    <!-- Angular Material requires Angular.js Libraries -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-messages.min.js"></script>
+    <!-- Angular Material Library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.0/angular-material.min.js"></script>
+
+    <!-- Your application bootstrap  -->
+    <script type="text/javascript">
+        /**
+         * You must include the dependency on 'ngMaterial'
+         */
+        angular.module('RR-Live', ['ngMaterial']);
+    </script>
+</head>
+<body ng-app="RR-Live" ng-cloak>
+<div class="map">
+    <img src="resources/images/map.svg">
+</div>
+<div class="side-bar">
+    <div class="side-bar-controls">
+        <md-slider-container>
+            <md-slider flex="" class="md-primary" md-discrete="" ng-model="rating3" step="1" min="1" max="7"
+                       aria-label="rating"></md-slider>
+        </md-slider-container>
+        <div class="slider-buttons">
+            <md-button class="md-raised md-primary">Play</md-button>
+            <md-button class="md-raised md-primary">Pause</md-button>
+            <md-button class="md-raised md-primary">Stop</md-button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
