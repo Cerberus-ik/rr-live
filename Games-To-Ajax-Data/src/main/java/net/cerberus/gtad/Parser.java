@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
+@SuppressWarnings("Duplicates")
 class Parser {
 
     private List<JSONObject> rawData;
@@ -113,8 +114,8 @@ class Parser {
             } else {
                 roleRunes.put(runeId, 1);
             }
-            timeStep.usageOfRunes.remove(Role.JUNGLE);
-            timeStep.usageOfRunes.put(Role.JUNGLE, roleRunes);
+//            timeStep.usageOfRunes.remove(Role.JUNGLE);
+//            timeStep.usageOfRunes.put(Role.JUNGLE, roleRunes);
         }
         return timeStep;
     }

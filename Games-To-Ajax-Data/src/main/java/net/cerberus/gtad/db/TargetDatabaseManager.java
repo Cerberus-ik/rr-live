@@ -15,9 +15,11 @@ public class TargetDatabaseManager {
 
     private Database database;
     private DatabaseCredentials databaseCredentials;
+    private String table;
 
-    public TargetDatabaseManager(DatabaseCredentials databaseCredentials) {
+    public TargetDatabaseManager(DatabaseCredentials databaseCredentials, String table) {
         this.databaseCredentials = databaseCredentials;
+        this.table = table;
     }
 
     public void connect() {
@@ -37,7 +39,7 @@ public class TargetDatabaseManager {
 
     public void truncateDatabase() {
         try {
-            PreparedStatement preparedStatement = this.database.getConnection().prepareStatement("TRUNCATE `rr-live`");
+            PreparedStatement preparedStatement = this.database.getConnection().prepareStatement("TRUNCATE TABLE `backend-api`");
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -47,7 +49,7 @@ public class TargetDatabaseManager {
 
     public void updateId(int id, String content) {
         try {
-            PreparedStatement preparedStatement = this.database.getConnection().prepareStatement("INSERT INTO `rr-live` (id, content) VALUES(?, ?);");
+            PreparedStatement preparedStatement = this.database.getConnection().prepareStatement("INSERT INTO `backend-api` (id, content) VALUES(?, ?);");
             preparedStatement.setInt(1, id);
             preparedStatement.setString(2, content);
             preparedStatement.executeUpdate();

@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class Main {
 
     public static void main(String[] args) {
-        Logger.logMessage("Starting the GTAD converter.", LogLevel.INFO, LogReason.GTAD);
+        Logger.logMessage("Starting the GTAD converter...", LogLevel.INFO, LogReason.GTAD);
         long startingTime = System.nanoTime();
         if (args.length < 2) {
             System.out.println("Define the time parts (--time)");
@@ -47,7 +47,7 @@ public class Main {
     }
 
     private static void pushSteps(List<TimeStep> steps, long firstGame, DatabaseCredentials databaseCredentials) {
-        TargetDatabaseManager targetDatabaseManager = new TargetDatabaseManager(databaseCredentials);
+        TargetDatabaseManager targetDatabaseManager = new TargetDatabaseManager(databaseCredentials, "backend-api");
         targetDatabaseManager.connect();
         targetDatabaseManager.truncateDatabase();
         JSONArray runeIdOrder = getRuneIdsInOrder(dataDragonRunesReforged());

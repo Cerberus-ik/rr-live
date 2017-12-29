@@ -1,9 +1,12 @@
 # SG – Summoner Gatherer 
-This part of rr-live feeds the other data gathering parts with summoners.
+This part of rr-live feeds the other data gathering programs with summoners.
 We wanted a scalable solution that's why we wrote this program.
 
 After a first test run we managed to get ``92423`` summoners that are platinum or higher.
 
+### v2 is planned
+After [GTAD](https://github.com/Cerberus-ik/rr-live/tree/master/Games-To-Ajax-Data) and [GG](https://github.com/Cerberus-ik/rr-live/tree/master/Riot-GG) we want to make this fully database based.
+We currently don't have to since the ``SG`` runs pretty rarely but a v2 is definitely in the pipeline.
 
 ### How does it work?
 

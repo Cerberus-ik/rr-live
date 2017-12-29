@@ -20,7 +20,7 @@ public class SourceDatabaseManager {
         this.dataSource.setUser(databaseCredentials.getUser());
         this.dataSource.setPassword(databaseCredentials.getPassword());
         this.dataSource.setServerName(databaseCredentials.getHost());
-        this.dataSource.setURL("jdbc:mysql://localhost/" + databaseCredentials.getDatabase() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
+        this.dataSource.setURL("jdbc:mysql://" + databaseCredentials.getHost() + "/" + databaseCredentials.getDatabase() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
     }
 
     public List<JSONObject> getGames() {

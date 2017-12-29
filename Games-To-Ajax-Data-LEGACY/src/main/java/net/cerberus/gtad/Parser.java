@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
+@SuppressWarnings("Duplicates")
 class Parser {
 
     private File directory;
