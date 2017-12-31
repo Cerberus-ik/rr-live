@@ -247,9 +247,9 @@
 				<h5 class="mdl-color-text--grey-200">All-time most picked runes</h5>
 				<div>
 					<div id="most-picked-role-runes-first-container" class="mdl-card mdl-color--grey-300">
-						<img id="most-picked-role-runes-first-img" src="perk/8005.png" alt="">
-						<h2 id="most-picked-role-runes-first-title" class="mdl-card__title-text">1. Press the Attack</h2>
-						<h3 id="most-picked-role-runes-first-subtitle" class="mdl-card__subtitle-text">Support &ndash; 3456 Picks &ndash; 50%</h3>
+						<img id="most-picked-role-runes-first-img" src="" alt="">
+						<h2 id="most-picked-role-runes-first-title" class="mdl-card__title-text"></h2>
+						<h3 id="most-picked-role-runes-first-subtitle" class="mdl-card__subtitle-text"></h3>
 					</div>
 					<div id="most-picked-role-runes-second-container" class="mdl-card mdl-color--grey-400">
 						<img id="most-picked-role-runes-second-img" src="none.jpg" alt="">
