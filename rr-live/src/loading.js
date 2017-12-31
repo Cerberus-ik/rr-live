@@ -61,7 +61,7 @@ var loading = {
 			function() {
 				features.notifyFeatureFailed("mostPickedRoleRunes");
 			},
-			"mostPickedRoleRunes", "totalAnalyzedRunes", "descriptions"
+			"mostPickedRoleRunes", "totalAnalyzedRunes", "runeDescriptions"
 		);
 
 		this.addLoadingCallback(
