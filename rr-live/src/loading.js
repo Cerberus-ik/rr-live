@@ -1,30 +1,29 @@
 var loading = {
-	loaded: [], // "runes", "runeDescriptions", "patches", "maxPossibleId," "mostUsedRune", "totalAnalysedGames", "googleCharts"
+	loaded: [], // "runes", "runeDescriptions", "patches", "maxPossibleId," "mostPickedRoleRunes", "totalAnalyzedRunes", "googleCharts"
 	loadingFailed: [],
 	loadingCallbacks: [],
 
-	init: function () {
+	init: function() {
 		this.addLoadingCallback(
-			function () {
+			function() {
 				configuration.setID(0);
 				setTimeout(loading.ui.hide, 300);
 				features.notifyFeatureLoaded("core");
 			},
-			function () {
+			function() {
 				features.notifyFeatureFailed("core");
 			},
-
 			"runes", "runeDescriptions", "patches", "maxPossibleID"
 		);
 
 		this.addLoadingCallback(
-			function () {
-				data.apiRequest("patches",
-					function (response) {
+			function() {
+				data.apiRequest("patches", 
+					function(response) {
 						data.patches = response;
 						loading.notifyIsLoaded("patches");
 					},
-					function () {
+					function() {
 						loading.notifyLoadingFailed("patches");
 					},
 					{
@@ -37,23 +36,51 @@ var loading = {
 		);
 
 		this.addLoadingCallback(
-			function () {
-				statistics.initGamesCount();
-				statistics.refreshGamesCount(configuration.minID, data.configuration.runeLoadingAmount);
-				statistics.ui.refreshGamesCount();
-				features.notifyFeatureLoaded("gamesCount");
+			function() {
+				try {
+					statistics.initGamesCount();
+					statistics.refreshGamesCount(configuration.minID, data.configuration.runeLoadingAmount);
+					statistics.ui.refreshGamesCount();
+					features.notifyFeatureLoaded("gamesCount");
+				} catch (e) {
+					console.log(e);
+					features.notifyFeatureFailed("gamesCount");
+				}
 			},
-			function () {
+			function() {
 				features.notifyFeatureFailed("gamesCount");
 			},
 			"runes", "maxPossibleID", "googleCharts"
 		);
+
+		this.addLoadingCallback(
+			function() {
+				statistics.ui.refreshMostPickedRoleRunes();
+				features.notifyFeatureLoaded("mostPickedRoleRunes");
+			},
+			function() {
+				features.notifyFeatureFailed("mostPickedRoleRunes");
+			},
+			"mostPickedRoleRunes", "totalAnalyzedRunes", "descriptions"
+		);
+
+		this.addLoadingCallback(
+			function() {
+				header.ui.refreshTotalAnalyzedRunes();
+				features.notifyFeatureLoaded("totalAnalyzedRunes");
+			},
+			function() {
+				features.notifyFeatureFailed("totalAnalyzedRunes");
+			},
+			"totalAnalyzedRunes"
+		);
 	},
 
-	start: function () {
+	start: function() {
 		statistics.init();
 		map.init();
 		configuration.ui.init();
+		footer.ui.init();
 		data.load();
 	},
 
@@ -67,14 +94,14 @@ var loading = {
 		this.check();
 	},
 
-	check: function () {
+	check: function() {
 		for (var i = 0; i < this.loadingCallbacks.length; i++) {
 			if (this.loadingCallbacks[i].called) continue;
 			var loadingsDone = true;
 			var someLoadingsFailed = false;
 			for (var j = 0; j < this.loadingCallbacks[i].require.length; j++) {
 				if (typeof this.loadingCallbacks[i].require[j] == "string") {
-					if (this.loadingFailed.indexOf(this.loadingCallbacks[i].require[j]) > 0) {
+					if (this.loadingFailed.indexOf(this.loadingCallbacks[i].require[j]) >= 0) {
 						someLoadingsFailed = true;
 						break;
 					}
@@ -87,7 +114,7 @@ var loading = {
 						loadingsDone = false;
 						break;
 					}
-				}
+				}				
 			}
 			if (someLoadingsFailed) {
 				if (typeof this.loadingCallbacks[i].fallback == "function") {
@@ -106,7 +133,7 @@ var loading = {
 	},
 
 	addLoadingCallback(callback, fallback, ...require) {
-		if (require.length == 0) return;
+		if (require.length == 0) return; 
 		this.loadingCallbacks.push({
 			called: false,
 			callback: callback,
@@ -121,12 +148,11 @@ var loading = {
 			main: document.getElementsByTagName('main')[0]
 		},
 
-		hide: function () {
+		hide: function() {
 			loading.ui.elements.loader.style.opacity = "0";
-			setTimeout(function () {
-				loading.ui.elements.loader.style.visibility = "hidden";
-			}, 400);
+			setTimeout(function() {loading.ui.elements.loader.style.visibility = "hidden";}, 400);
 			loading.ui.elements.main.style.opacity = "1";
+			header.ui.show();
 		}
 	}
-};
+}
