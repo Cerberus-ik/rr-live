@@ -1,12 +1,12 @@
 var configuration = {
     currentID: null,
-    getCurrentIndex: function () {
+    getCurrentIndex: function() {
         return this.getIndex(this.currentID);
     },
-    getIndex: function (id) {
+    getIndex: function(id) {
         return id - configuration.minID;
     },
-    setID: function (id) {
+    setID: function(id) {
         if (!this.isValid()) {
             throw "Configuration not valid";
             return;
@@ -27,19 +27,19 @@ var configuration = {
             data.loadNext();
         }
     },
-    nextID: function (dontStop) {
+    nextID: function(dontStop) {
         if (!dontStop) this.stop();
-        if (this.currentID < this.maxID) this.setID(this.currentID + 1);
+        if (this.currentID < this.maxID) this.setID(this.currentID+1);
     },
-    previousID: function (dontStop) {
+    previousID: function(dontStop) {
         if (!dontStop) this.stop();
-        if (this.currentID > this.minID) this.setID(this.currentID - 1);
+        if (this.currentID > this.minID) this.setID(this.currentID-1);
     },
-    lastID: function (dontStop) {
+    lastID: function(dontStop) {
         if (!dontStop) this.stop();
         this.setID(this.maxID);
     },
-    firstID: function (dontStop) {
+    firstID: function(dontStop) {
         if (!dontStop) this.stop();
         this.setID(this.minID);
     },
@@ -53,17 +53,15 @@ var configuration = {
 
     playInterval: null,
     isPlaying: false,
-    play: function () {
+    play: function() {
         if (this.currentID < this.maxID) {
-            this.playInterval = setInterval(function () {
-                configuration.nextID(true);
-            }, 1000);
+            this.playInterval = setInterval(function() {configuration.nextID(true);}, 1000);
             this.isPlaying = true;
             this.ui.refreshToggleButton();
             map.ui.movingEngines.start();
         }
     },
-    stop: function () {
+    stop: function() {
         if (this.playInterval) {
             clearInterval(this.playInterval);
             this.playInterval = null;
@@ -72,7 +70,7 @@ var configuration = {
         this.isPlaying = false;
         this.ui.refreshToggleButton();
     },
-    toggle: function () {
+    toggle: function() {
         if (!this.playInterval) {
             this.play();
         } else {
@@ -80,7 +78,7 @@ var configuration = {
         }
     },
 
-    isValid: function () {
+    isValid: function() {
         return this.minID != null && this.maxID != null && this.baseTimestamp != null && this.interval != null;
     },
 
@@ -98,14 +96,14 @@ var configuration = {
             buttonLast: document.getElementById('control-button-last'),
             progressBar: document.getElementById('configuration-progress')
         },
-        refreshToggleButton: function () {
+        refreshToggleButton: function() {
             if (configuration.isPlaying) {
                 this.elements.iconToggle.innerHTML = "pause";
             } else {
                 this.elements.iconToggle.innerHTML = "play_arrow";
             }
         },
-        refreshInformations: function () {
+        refreshInformations: function() {
             var timestamp = configuration.baseTimestamp + configuration.interval * configuration.getIndex(configuration.currentID);
             var date = new Date(timestamp);
             this.elements.currentDate.innerHTML = date.getDate() + ". " + data.getMonthName(date.getMonth()) + " " + date.getFullYear();
@@ -113,7 +111,7 @@ var configuration = {
             this.elements.currentPatch.innerHTML = data.getPatch(timestamp);
             this.elements.currentGamesCount.innerHTML = data.getGamesCount(configuration.currentID);
         },
-        refreshProgressBar: function () {
+        refreshProgressBar: function() {
             if (configuration.currentID == configuration.minID) {
                 this.elements.buttonFirst.setAttribute("disabled", "");
                 this.elements.buttonPrevious.setAttribute("disabled", "");
@@ -130,36 +128,22 @@ var configuration = {
                 this.elements.buttonNext.removeAttribute("disabled");
                 this.elements.buttonLast.removeAttribute("disabled");
             }
+            if (this.elements.progressBar.MaterialProgress == undefined) {
+                componentHandler.upgradeElements(this.elements.progressBar);
+            }
             this.elements.progressBar.MaterialProgress.setBuffer((configuration.maxID - configuration.minID) / (configuration.maxPossibleID - configuration.minID) * 100);
             this.elements.progressBar.MaterialProgress.setProgress((configuration.currentID - configuration.minID) / (configuration.maxPossibleID - configuration.minID) * 100);
         },
-        refreshGamesCountChart: function () {
+        refreshGamesCountChart: function() {
 
         },
-        init: function () {
-            window.addEventListener("keydown", function (event) {
-                event = event || window.event;
-                if (event.keyCode == 37) {
-                    configuration.previousID()
-                } else if (event.keyCode == 39) {
-                    configuration.nextID()
-                }
-            }, false);
-            this.elements.buttonFirst.addEventListener("click", function () {
-                configuration.firstID();
-            });
-            this.elements.buttonPrevious.addEventListener("click", function () {
-                configuration.previousID();
-            });
-            this.elements.buttonNext.addEventListener("click", function () {
-                configuration.nextID();
-            });
-            this.elements.buttonLast.addEventListener("click", function () {
-                configuration.lastID();
-            });
-            this.elements.buttonToggle.addEventListener("click", function () {
-                configuration.toggle();
-            });
+        init: function() {
+            window.addEventListener("keydown", function(event) {event = event || window.event; if (event.keyCode == 37) {configuration.previousID()} else if (event.keyCode == 39) {configuration.nextID()}}, false);
+            this.elements.buttonFirst.addEventListener("click", function() {configuration.firstID();});
+            this.elements.buttonPrevious.addEventListener("click", function() {configuration.previousID();});
+            this.elements.buttonNext.addEventListener("click", function() {configuration.nextID();});
+            this.elements.buttonLast.addEventListener("click", function() {configuration.lastID();});
+            this.elements.buttonToggle.addEventListener("click", function() {configuration.toggle();});
         }
     }
-};
+}
