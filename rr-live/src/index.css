@@ -47,7 +47,7 @@ main {
 	max-width: 100%;
 	left: 0;
 	right: 0;
-	margin: 2em auto 8em;
+	margin: 2em auto 10em;
 	padding: 0 16px;
 	position: relative;
 	transition: opacity 1s cubic-bezier(0.0, 0.0, 0.2, 1); 
