@@ -30,6 +30,7 @@ build/
 credentials.json
 key.json
 config.json
+sftp-config.json
 src/main/resources/
 src/test/resources/
 
