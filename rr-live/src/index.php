@@ -14,12 +14,12 @@
 <body class="mdl-color--grey-800">
 <div id="loader" class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active mdl-color-text--grey-200"></div>
 <div class="mdl-layout mdl-js-layout">
-  <header class="mdl-layout__header">
-    <div class="mdl-layout__header-row">
-      <span class="mdl-layout-title">Runes Reforged Live</span>
-      <div class="mdl-layout-spacer"></div>
-    </div>
-  </header>
+	<header class="mdl-layout__header">
+	<div class="mdl-layout__header-row">
+		<span class="mdl-layout-title">Runes Reforged Live</span>
+		<div class="mdl-layout-spacer"></div>
+	</div>
+	</header>
 </div>
 <main style="opacity: 0;">
 	<div id="primary-content">
@@ -254,8 +254,8 @@
 	<div class="sorry-text"><h5 id="error-title"></h5><p id="error-message"></p></div>
 </div>
 <div id="error-snackbar" class="mdl-js-snackbar mdl-snackbar">
-  <div class="mdl-snackbar__text"></div>
-  <button class="mdl-snackbar__action" type="button"></button>
+	<div class="mdl-snackbar__text"></div>
+	<button class="mdl-snackbar__action" type="button"></button>
 </div>
 <script type="text/javascript" src="errors.js"></script>
 <script type="text/javascript" src="features.js"></script>
@@ -272,14 +272,14 @@
 	loading.start();
 </script>
 <footer class="mdl-mini-footer mdl-color--grey-900">
-  <div class="mdl-mini-footer__left-section">
-    <div class="mdl-logo">Runes Reforged Live</div>
-    <p>This site isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends &copy; Riot Games, Inc.</p>
-    <ul class="mdl-mini-footer__link-list">
-      <li><a href="#">Imprint</a></li>
-      <li><a href="#">Contact</a></li>
-    </ul>
-  </div>
+<div class="mdl-mini-footer__left-section">
+	<div class="mdl-logo">Runes Reforged Live</div>
+	<p>This site isn't endorsed by Riot Games and doesn't reflect the views or opinions of Riot Games or anyone officially involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered trademarks of Riot Games, Inc. League of Legends &copy; Riot Games, Inc.</p>
+	<ul class="mdl-mini-footer__link-list">
+		<li><a href="#">Imprint</a></li>
+		<li><a href="#">Contact</a></li>
+	</ul>
+</div>
 </footer>
 </body>
 </html>

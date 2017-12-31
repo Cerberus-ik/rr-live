@@ -1,348 +1,348 @@
 body {
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 0;
-    padding: 0;
-    padding-bottom: 200px;
+	width: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 0;
+	padding: 0;
+	padding-bottom: 200px;
 }
 
 main {
-    width: 80em;
-    max-width: 100%;
-    left: 0;
-    right: 0;
-    margin: 6.5em auto 3em;
-    padding: 0 16px;
-    position: relative;
-    transition: opacity 1s cubic-bezier(0.0, 0.0, 0.2, 1);
+	width: 80em;
+	max-width: 100%;
+	left: 0;
+	right: 0;
+	margin: 6.5em auto 3em;
+	padding: 0 16px;
+	position: relative;
+	transition: opacity 1s cubic-bezier(0.0, 0.0, 0.2, 1);
 }
 
 main #primary-content {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
+	display: flex;
+	flex-direction: row;
+	justify-content: center;
 }
 
 /****** MAP ******/
 
 main #primary-content #map {
-    width: 80%;
-    max-width: 80vh;
-    position: relative;
+	width: 80%;
+	max-width: 80vh;
+	position: relative;
 }
 
 main #primary-content #map #map-overlays {
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    position: absolute;
-    z-index: 1001;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	position: absolute;
+	z-index: 1001;
 }
 
 main #primary-content #map #map-overlays > div {
-    width: 25em;
-    background-color: #1A237E;
-    color: rgba(255, 255, 255, .87);
-    position: absolute;
-    opacity: 0;
-    z-index: initial;
-    transition: opacity 0.3s cubic-bezier(0.0, 0.0, 0.2, 1), clip-path 0.3s cubic-bezier(0.0, 0.0, 0.2, 1);
-    visibility: hidden;
-    clip-path: circle(20px at 36px 37.5px);
+	width: 25em;
+	background-color: #1A237E;
+	color: rgba(255, 255, 255, .87);
+	position: absolute;
+	opacity: 0;
+	z-index: initial;
+	transition: opacity 0.3s cubic-bezier(0.0, 0.0, 0.2, 1), clip-path 0.3s cubic-bezier(0.0, 0.0, 0.2, 1);
+	visibility: hidden;
+	clip-path: circle(20px at 36px 37.5px);
 }
 
 main #primary-content #map #map-overlays > div.shown {
-    z-index: 9000;
-    opacity: 1;
-    clip-path: circle(30em at 36px 37.5px);
+	z-index: 9000;
+	opacity: 1;
+	clip-path: circle(30em at 36px 37.5px);
 }
 
 main #primary-content #map #map-overlays > div ul {
-    margin: 0;
-    padding: 0;
+	margin: 0;
+	padding: 0;
 }
 
 main #primary-content #map #map-overlays > div ul .mdl-list__item-avatar {
-    opacity: 0;
+	opacity: 0;
 }
 
 main #primary-content #map #map-overlays > div ul span {
-    color: rgba(255, 255, 255, .87);
+	color: rgba(255, 255, 255, .87);
 }
 
 main #primary-content #map #map-overlays > div ul span.mdl-list__item-sub-title,
 main #primary-content #map #map-overlays > div ul span.mdl-list__item-sub-title * {
-    color: rgba(255, 255, 255, .54);
+	color: rgba(255, 255, 255, .54);
 }
 
 main #map #map-overlays .map-toplane {
-    left: 10.5%;
-    top: 10%;
+	left: 10.5%;
+	top: 10%;
 }
 
 main #map #map-overlays .map-jungle {
-    left: 47%;
-    top: 71%;
+	left: 47%;
+	top: 71%;
 }
 
 main #map #map-overlays .map-midlane {
-    left: 46%;
-    top: 46%;
+	left: 46%;
+	top: 46%;
 }
 
 main #map #map-overlays .map-adc {
-    left: 76%;
-    top: 86.2%;
+	left: 76%;
+	top: 86.2%;
 }
 
 main #map #map-overlays .map-support {
-    left: 86.5%;
-    top: 76%;
+	left: 86.5%;
+	top: 76%;
 }
 
 main #map #map-overlays img {
-    height: 40px;
-    width: 40px;
-    margin-left: 16px;
-    position: absolute;
-    transition: all 0.2s cubic-bezier(0.0, 0.0, 0.2, 1) 0s, margin-top 1.5s ease, margin-left 1.5s ease;
-    transform: scale(1.5);
+	height: 40px;
+	width: 40px;
+	margin-left: 16px;
+	position: absolute;
+	transition: all 0.2s cubic-bezier(0.0, 0.0, 0.2, 1) 0s, margin-top 1.5s ease, margin-left 1.5s ease;
+	transform: scale(1.5);
 }
 
 main #map #map-overlays img.shown {
-    padding: 0 !important;
-    z-index: 9001;
-    transform: scale(1) !important;
-    transition: all 0.2s cubic-bezier(0.0, 0.0, 0.2, 1) 0s !important;
+	padding: 0 !important;
+	z-index: 9001;
+	transform: scale(1) !important;
+	transition: all 0.2s cubic-bezier(0.0, 0.0, 0.2, 1) 0s !important;
 }
 
 main #map #map-overlays img.map-img-first {
-    margin-top: 16px;
-    cursor: pointer;
+	margin-top: 16px;
+	cursor: pointer;
 }
 
 main #map #map-overlays img.map-img-first.shown {
-    margin-top: 16px !important;
+	margin-top: 16px !important;
 }
 
 main #map #map-overlays img.map-img-second {
-    margin-top: 88px;
-    opacity: 0.6;
-    transition: all 0.2s cubic-bezier(0.0, 0.0, 0.2, 1) 0.05s, margin-top 1.5s ease, margin-left 1.5s ease;
+	margin-top: 88px;
+	opacity: 0.6;
+	transition: all 0.2s cubic-bezier(0.0, 0.0, 0.2, 1) 0.05s, margin-top 1.5s ease, margin-left 1.5s ease;
 }
 
 main #map #map-overlays img.map-img-second.shown {
-    margin-top: 88px !important;
+	margin-top: 88px !important;
 }
 
 main #map #map-overlays img.map-img-third {
-    margin-top: 160px;
-    opacity: 0.3;
-    transition: all 0.2s cubic-bezier(0.0, 0.0, 0.2, 1) 0.07s, margin-top 1.5s ease, margin-left 1.5s ease;
+	margin-top: 160px;
+	opacity: 0.3;
+	transition: all 0.2s cubic-bezier(0.0, 0.0, 0.2, 1) 0.07s, margin-top 1.5s ease, margin-left 1.5s ease;
 }
 
 main #map #map-overlays img.map-img-third.shown {
-    margin-top: 160px !important;
+	margin-top: 160px !important;
 }
 
 main #map #map-overlays img.map-img-first.shown,
 main #map #map-overlays img.map-img-second.shown,
 main #map #map-overlays img.map-img-third.shown {
-    width: 40px;
-    height: 40px;
-    margin-left: 16px !important;
-    opacity: 1;
+	width: 40px;
+	height: 40px;
+	margin-left: 16px !important;
+	opacity: 1;
 }
 
 /****** CONFIGURATION ******/
 
 main #primary-content #configuration {
-    width: 20em;
-    padding-left: 3em;
-    padding-top: 0.7em;
+	width: 20em;
+	padding-left: 3em;
+	padding-top: 0.7em;
 }
 
 main #primary-content #configuration #current-date {
-    margin-bottom: 0;
+	margin-bottom: 0;
 }
 
 main #primary-content #configuration #current-daytime {
-    margin-top: 2px;
+	margin-top: 2px;
 }
 
 main #primary-content #configuration #play-controls {
-    display: flex;
-    justify-content: center;
+	display: flex;
+	justify-content: center;
 }
 
 main #primary-content #configuration #play-controls button {
-    margin: 8px;
+	margin: 8px;
 }
 
 main #primary-content #configuration h6 {
-    margin-bottom: 0;
+	margin-bottom: 0;
 }
 
 main #primary-content #configuration #games-count-chart {
-    height: 10em;
+	height: 10em;
 }
 
 /****** HELPERS ******/
 
 main #map #map-overlays > div#please-hover {
-    width: 9em;
-    margin-left: 5em;
-    margin-top: 17px;
-    background-color: #304FFE;
-    position: absolute;
-    z-index: initial;
-    clip-path: none;
-    overflow: visible;
+	width: 9em;
+	margin-left: 5em;
+	margin-top: 17px;
+	background-color: #304FFE;
+	position: absolute;
+	z-index: initial;
+	clip-path: none;
+	overflow: visible;
 }
 
 main #map #map-overlays > div#please-hover::before {
-    content: '';
-    width: 0;
-    height: 0;
-    position: absolute;
-    top: 8px;
-    left: -0.5em;
-    border: 0.5em solid transparent;
-    border-right-color: #304FFE;
-    border-bottom-color: #304FFE;
-    transform: rotate(135deg);
-    border-radius: 2px;
+	content: '';
+	width: 0;
+	height: 0;
+	position: absolute;
+	top: 8px;
+	left: -0.5em;
+	border: 0.5em solid transparent;
+	border-right-color: #304FFE;
+	border-bottom-color: #304FFE;
+	transform: rotate(135deg);
+	border-radius: 2px;
 }
 
 main #map #map-overlays > div#please-hover .mdl-card__supporting-text {
-    color: rgba(255, 255, 255, .87);
-    padding: 8px;
+	color: rgba(255, 255, 255, .87);
+	padding: 8px;
 }
 
 /****** SORRY & ERROR ******/
 
 .sorry {
-    width: 100%;
-    height: 100%;
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: rgba(255, 255, 255, .87);
-    font-size: 1.2em;
-    background-color: #212121;
-    z-index: 100000;
+	width: 100%;
+	height: 100%;
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	color: rgba(255, 255, 255, .87);
+	font-size: 1.2em;
+	background-color: #212121;
+	z-index: 100000;
 }
 
 .sorry.shown {
-    display: flex;
+	display: flex;
 }
 
 .sorry .sorry-text {
-    max-width: 24em;
-    width: 60%;
-    padding: 16px;
+	max-width: 24em;
+	width: 60%;
+	padding: 16px;
 }
 
 .sorry h5 {
-    margin: 0;
-    color: #C5CAE9;
+	margin: 0;
+	color: #C5CAE9;
 }
 
 .sorry p {
-    margin: 0;
-    margin-top: 8px;
+	margin: 0;
+	margin-top: 8px;
 }
 
 #error h5 {
-    color: #FFCDD2;
+	color: #FFCDD2;
 }
 
 #error-snackbar {
-    z-index: 101000;
-    background-color: #B71C1C;
+	z-index: 101000;
+	background-color: #B71C1C;
 }
 
 /****** LOADER ******/
 
 #loader {
-    margin: -14px;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    opacity: 1;
-    transition: opacity 0.3s cubic-bezier(0.0, 0.0, 0.2, 1);
+	margin: -14px;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	opacity: 1;
+	transition: opacity 0.3s cubic-bezier(0.0, 0.0, 0.2, 1);
 }
 
 #loader.hidden {
-    opacity: 0;
+	opacity: 0;
 }
 
 /****** FOOTER ******/
 
 footer {
-    width: 100%;
-    position: absolute;
-    bottom: 0;
-    box-sizing: border-box;
+	width: 100%;
+	position: absolute;
+	bottom: 0;
+	box-sizing: border-box;
 }
 
 footer .mdl-mini-footer__left-section {
-    max-width: 100%;
+	max-width: 100%;
 }
 
 footer .mdl-logo {
-    float: none;
+	float: none;
 }
 
 footer p {
-    width: 80em;
-    max-width: 100%;
+	width: 80em;
+	max-width: 100%;
 }
 
 /****** MDL ADJUSTMENTS ******/
 
 .mdl-card {
-    min-height: 0px !important;
+	min-height: 0px !important;
 }
 
 .mdl-layout__header-row .mdl-navigation__link,
 .mdl-layout__header .mdl-layout-title {
-    color: white;
+	color: white;
 }
 
 /******* MEDIA QUERYS ******/
 
 @media (max-aspect-ratio: 1/1), (max-width: 900px) {
-    .sorry {
-        display: flex;
-    }
+	.sorry {
+		display: flex;
+	}
 
-    #loader {
-        display: none;
-    }
+	#loader {
+		display: none;
+	}
 
-    main {
-        display: none;
-    }
+	main {
+		display: none;
+	}
 }
 
 @media (max-width: 1004px) {
-    body {
-        padding-bottom: 224px;
-    }
+	body {
+		padding-bottom: 224px;
+	}
 }
 
 @media (min-width: 2500px) {
-    body {
-        zoom: 2;
-        -moz-transform: scale(2);
-        -moz-transform-origin: 0 0;
-    }
+	body {
+		zoom: 2;
+		-moz-transform: scale(2);
+		-moz-transform-origin: 0 0;
+	}
 }
