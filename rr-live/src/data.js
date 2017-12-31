@@ -2,8 +2,8 @@ var data = {
     runes: null,
     runeDescriptions: null,
     patches: null,
-    mostUsedRune: null,
-    totalAnalysedGames: null,
+    mostPickedRoleRunes: null,
+    totalAnalyzedRunes: null,
 
     getRuneName: function (id) {
         var category = Math.floor(id / 100) * 100;
@@ -22,7 +22,18 @@ var data = {
         return "Unknown";
     },
 
-    getPatch: function (timestamp) {
+    getRoleName: function(name) {
+        switch (name) {
+            case "ADC": return "ADC";
+            case "TOP": return "Toplane";
+            case "MID": return "Midlane";
+            case "SUPPORT": return "Support";
+            case "JUNGLE": return "Jungle";
+        }
+        return "Unknown";
+    },
+
+    getPatch: function(timestamp) {
         var x;
         for (var i = 0; i < data.patches.length; i++) {
             if (data.patches[i].start <= timestamp) {
@@ -32,38 +43,25 @@ var data = {
         return data.patches[x].patch;
     },
 
-    getMonthName: function (month) {
+    getMonthName: function(month) {
         switch (month) {
-            case 0:
-                return "January";
-            case 1:
-                return "February";
-            case 2:
-                return "March";
-            case 3:
-                return "April";
-            case 4:
-                return "May";
-            case 5:
-                return "June";
-            case 6:
-                return "July";
-            case 7:
-                return "August";
-            case 8:
-                return "September";
-            case 9:
-                return "October";
-            case 10:
-                return "November";
-            case 11:
-                return "December";
-            default:
-                return "Unknown";
+            case 0: return "January";
+            case 1: return "February";
+            case 2: return "March";
+            case 3: return "April";
+            case 4: return "May";
+            case 5: return "June";
+            case 6: return "July";
+            case 7: return "August";
+            case 8: return "September"; 
+            case 9: return "October";
+            case 10: return "November";
+            case 11: return "December";
+            default: return "Unknown";
         }
     },
 
-    getDaytime: function (hour) {
+    getDaytime: function(hour) {
         if (hour > 22 || hour < 6) {
             return "Night";
         } else if (hour >= 6 && hour < 11) {
@@ -77,15 +75,15 @@ var data = {
         }
     },
 
-    getGamesCount: function (id) {
+    getGamesCount: function(id) {
         if (id > configuration.maxID || id < configuration.minID) return;
         var count = 0;
-        Object.keys(map.roles).forEach(function (name) {
+        Object.keys(map.roles).forEach(function(name) {
             for (var i = 0; i < data.runes[name][configuration.getIndex(id)].length; i++) {
                 count += data.runes[name][configuration.getIndex(id)][i];
             }
         });
-        return Math.floor(count / 10);
+        return Math.floor(count/10);
     },
 
     configuration: {
@@ -93,107 +91,125 @@ var data = {
         runeLoadingAmount: 10
     },
 
-    apiRequest: function (api, resonseCallback, errorCallback, parameters) {
+    apiRequest: function(api, resonseCallback, errorCallback, parameters) {
         var ajax = new XMLHttpRequest();
-        if (typeof errorCallback !== undefined) {
+        if (typeof errorCallback == "function") {
             ajax.addEventListener("error", errorCallback);
             ajax.addEventListener("abort", errorCallback);
         }
-        ajax.onreadystatechange = function () {
+        ajax.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 try {
                     var json = JSON.parse(this.responseText);
                     resonseCallback(json);
                 } catch (e) {
+                    console.log(e);
                     if (typeof errorCallback == "function") {
                         errorCallback();
                     }
-                }
+                }               
             }
             if (this.status == 500) {
-                if (typeof errorCallback !== undefined) {
+                if (typeof errorCallback == "function") {
                     errorCallback();
                 }
             }
         };
         var query = "";
-        if (parameters != undefined &&
-            parameters != null &&
+        if (parameters != undefined && 
+            parameters != null && 
             Object.keys(parameters).length > 0) {
-            Object.keys(parameters).forEach(function (key) {
+            Object.keys(parameters).forEach(function(key) {
                 query += "&" + key + "=" + parameters[key];
             });
         }
-        ajax.open("GET", "api.php?api=" + api + query, true);
+        ajax.open("GET", "api.php?api="+api+query, true);
         ajax.send();
     },
 
-    load: function () {
+    load: function() {
         if (!(new XMLHttpRequest())) {
             throwError("No Ajax support", "The Application uses Ajax (also known as XMLHttpRequest), but it's required. Please use a other Browser.");
             return;
         }
 
-        data.apiRequest("maxpossibleid",
-            function (response) {
+        data.apiRequest("maxpossibleid", 
+            function(response) {
                 configuration.maxPossibleID = response.latestStepId;
                 loading.notifyIsLoaded("maxPossibleID");
             },
-            function () {
+            function() {
                 loading.notifyLoadingFailed("maxPossibleID");
             }
         );
 
-        data.apiRequest("runes",
-            function (response) {
+        data.apiRequest("runes", 
+            function(response) {
                 data.runes = response;
                 configuration.baseTimestamp = response.firstGame;
-                configuration.interval = response.stepSize;
+                configuration.interval = response.stepSize; 
                 configuration.maxID = configuration.minID + data.configuration.runeLoadingAmount - 1;
                 loading.notifyIsLoaded("runes");
                 if (data.configuration.autoLoad) {
                     data.loadNext();
                 }
             },
-            function () {
+            function() {
                 loading.notifyLoadingFailed("runes");
             },
             {
-                id: configuration.minID,
+                id: configuration.minID, 
                 amount: data.configuration.runeLoadingAmount
             }
         );
 
-        data.apiRequest("descriptions",
-            function (response) {
+        data.apiRequest("descriptions", 
+            function(response) {
                 data.runeDescriptions = response;
                 loading.notifyIsLoaded("runeDescriptions");
-            },
-            function () {
+            }, 
+            function() {
                 loading.notifyLoadingFailed("runeDescriptions");
             }
         );
 
-        data.apiRequest("mostusedrune",
-            function (response) {
-                data.mostUsedRune = response;
-                loading.notifyIsLoaded("mostUsedRune");
+        data.apiRequest("analysedrunes",
+            function(response) {
+                if (typeof response.totalAnalyzedRunes != "number") {
+                    loading.notifyLoadingFailed("totalAnalyzedRunes");
+                    return;
+                }
+                data.totalAnalyzedRunes = response.totalAnalyzedRunes;
+                loading.notifyIsLoaded("totalAnalyzedRunes");
             },
-            function () {
-                loading.notifyLoadingFailed("mostUsedRune");
+            function() {
+                loading.notifyLoadingFailed("totalAnalyzedRunes");
+            }
+        );
+
+        data.apiRequest("mostpickedrolerunes", 
+            function(response) {
+                response.sort(function(a, b) {
+                    return b.timesPicked - a.timesPicked;
+                });
+                data.mostPickedRoleRunes = response;
+                loading.notifyIsLoaded("mostPickedRoleRunes");
+            }, 
+            function() {
+                loading.notifyLoadingFailed("mostPickedRoleRunes");
             }
         );
     },
 
-    loadNext: function () {
+    loadNext: function() {
         if (configuration.maxID >= configuration.maxPossibleID) return;
         var id = configuration.maxID + 1;
         configuration.maxLoadingID = configuration.maxID - configuration.minID + data.configuration.runeLoadingAmount;
         configuration.ui.refreshProgressBar();
-        data.apiRequest("runes",
-            function (response) {
+        data.apiRequest("runes", 
+            function(response) {
                 var lastID = 0;
-                Object.keys(map.roles).forEach(function (name) {
+                Object.keys(map.roles).forEach(function(name) {
                     for (var i = 0; i < data.configuration.runeLoadingAmount; i++) {
                         if (response[name][i] != undefined) {
                             data.runes[name][id - configuration.minID + i] = response[name][i];
@@ -211,11 +227,11 @@ var data = {
                     data.loadNext();
                 }
             },
-            function () {
+            function() {
                 errors.throw("Failed to load Data", null, errors.SORRY);
             },
             {
-                id: id,
+                id: id, 
                 amount: data.configuration.runeLoadingAmount
             });
     }
