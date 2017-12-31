@@ -2,7 +2,7 @@ var errors = {
     FATAL: 0,
     SORRY: 1,
 
-    throw: function (title, message, level, debugMessage) {
+    throw: function(title, message, level, debugMessage) {
         if (debugMessage != undefined) {
             console.log(debugMessage);
         }
@@ -21,19 +21,20 @@ var errors = {
                 title: document.getElementById('error-title'),
                 message: document.getElementById('error-message')
             },
-            snackbar: document.getElementById('error-snackbar')
+            snackbar: document.getElementById('error-snackbar') 
         },
 
-        showPersistent: function (title, message) {
+        showPersistent: function(title, message) {
             this.elements.persistent.title.innerHTML = title;
             this.elements.persistent.message.innerHTML = message;
             this.elements.persistent.container.classList.add("shown");
         },
 
-        showSnackbar: function (message) {
+        showSnackbar: function(message) {
             'use strict';
             var data = {
-                message: message
+                message: message,
+                timeout: 2000
             };
             if (this.elements.snackbar.MaterialSnackbar == undefined) {
                 componentHandler.upgradeElements(this.elements.snackbar);
@@ -41,10 +42,10 @@ var errors = {
             this.elements.snackbar.MaterialSnackbar.showSnackbar(data);
         }
     }
-};
+}
 
-window.onerror = function (message, source, lineno, colno, error) {
+window.onerror = function(message, source, lineno, colno, error) {
     if ((/syntax/gi).test(error)) {
         errors.throw("Site is broken", "Some of the code is not valid &ndash; sorry for that &ndash;, but we will fix it!", errors.FATAL);
     }
-};
+}
