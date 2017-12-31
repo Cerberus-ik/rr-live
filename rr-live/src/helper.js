@@ -1,12 +1,12 @@
 var helper = {
 	isVisible: false,
-	init: function () {
+	init: function() {
 		if (window.localStorage === false || !localStorage.getItem("visited")) {
 			helper.isVisible = true;
 			helper.ui.show();
 		}
 	},
-	hide: function () {
+	hide: function() {
 		helper.isVisible = false;
 		localStorage.setItem("visited", true);
 		helper.ui.hide();
@@ -15,15 +15,13 @@ var helper = {
 		elements: {
 			helper: document.getElementById('please-hover')
 		},
-		show: function () {
+		show: function() {
 			this.elements.helper.style.visibility = "visible";
 			this.elements.helper.classList.add("shown");
 		},
-		hide: function () {
+		hide: function() {
 			this.elements.classList.remove("shown");
-			setTimeout(function () {
-				helper.ui.elements.style.visibility = "hidden";
-			}, 300);
+			setTimeout(function() {helper.ui.elements.style.visibility = "hidden";}, 300);
 		}
 	}
-};
+}
