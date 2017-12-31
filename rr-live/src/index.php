@@ -265,6 +265,8 @@
 <script type="text/javascript" src="statistics.js"></script>
 <script type="text/javascript" src="data.js"></script>
 <script type="text/javascript" src="map.js"></script>
+<script type="text/javascript" src="header.js"></script>
+<script type="text/javascript" src="footer.js"></script>
 <script type="text/javascript" src="runes.js"></script>
 <script type="text/javascript" src="helper.js"></script>
 <script type="text/javascript">
