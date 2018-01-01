@@ -55,8 +55,8 @@ We completely redrew the map from scratch as a svg. Don't get me wrong the origi
 scale well since it is a png file. But this allowed us to give the map our very own custom color scheme. The result 
 should speak for itself. Even tho many hours went into designing the map the result was worth it     
     
-### First conceptual design
-![Image](https://github.com/Cerberus-ik/rr-live/blob/master/resources/images/rr-live.png)
+### First conceptual design -> v1 Design
+![Image](https://github.com/Cerberus-ik/rr-live/blob/master/resources/images/rr-live.png) -> ![Image](https://github.com/Cerberus-ik/rr-live/blob/master/resources/images/v1.png)
 
 ### Why are 70% of this project written in java?
 Almost the whole backend is written in java, but why tho? Since we splitted the project into the front end ``Garry`` and
