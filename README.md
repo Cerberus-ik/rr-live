@@ -104,7 +104,7 @@ Next up we use a program called [GG](https://github.com/Cerberus-ik/rr-live/tree
 gather data. We get every ranked game from a summoner after our cut off date which is ``1511568000000`` which is 
 the 25.11.2017 0:00:00 (11.25.2017 for all of you americans out there ^^) This way we can be sure that every game contains the
 new Runes Reforged system. From every game we get we save around 5% of it in a mysql database.
-We only save so lille of the game since we only need a few parameters from each game. Take a look in the [GG](https://github.com/Cerberus-ik/rr-live/tree/master/Riot-GG) folder
+We only save small portions of the game since we only need a few parameters from each game. Take a look in the [GG](https://github.com/Cerberus-ik/rr-live/tree/master/Riot-GG) folder
 if you want to know more about this step. 
 
 ##### Step 2: Convert the data
