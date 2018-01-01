@@ -56,7 +56,15 @@ scale well since it is a png file. But this allowed us to give the map our very 
 should speak for itself. Even tho many hours went into designing the map the result was worth it     
     
 ### First conceptual design -> v1 Design
-![Image](https://github.com/Cerberus-ik/rr-live/blob/master/resources/images/rr-live.png) -> ![Image](https://github.com/Cerberus-ik/rr-live/blob/master/resources/images/v1.png)
+<p align="center">
+  <img width="350" height="350" src="https://github.com/Cerberus-ik/rr-live/blob/master/resources/images/rr-live.png">
+</p>
+<p align="center">
+  <img width="493" height="300" src="https://github.com/Cerberus-ik/rr-live/blob/master/resources/images/v1.png">
+</p>
+
+We went from a 5 minute paint sketch to this hand drawn svg map.
+The concept is the same but you could say the finished version looks a bit more polished :)
 
 ### Why are 70% of this project written in java?
 Almost the whole backend is written in java, but why tho? Since we splitted the project into the front end ``Garry`` and
