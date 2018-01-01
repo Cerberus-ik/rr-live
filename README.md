@@ -4,7 +4,21 @@ current "cool" and "meta" Runes from Runes-Reforged and how their popularity shi
 an interactive map with the ability to scroll through the recent Patches and days.
 The project is currently hosted on our [main site](https://cerberus.my.to/) and on our [backup](http://vent-projects.de/riot-dev/).
 New features will only be present on our main site. If the backend should go down we recommend still trying to access
-the [main site](https://cerberus.my.to/). Since both use one backend api.
+the [main site](https://cerberus.my.to/). Since they use the same backend api.
+
+### Short disclaimer
+The server is hosted in EUW we don't know how well the site performs in NA or other regions. We expect some longer load
+times. If you are interested why the site takes different amounts of time to load take a look in the [rr-live](https://github.com/Cerberus-ik/rr-live/tree/master/rr-live) folder.
+We strongly recommend checking out all the folders since they contain a more in depth explanation on what they do.
+We apologize for every english related misstate we made in this project. Both maintainers are not native speakers. If 
+you find a mistakes or want to correct the documentation in any way feel free to create a pull request.
+Please report errors or bugs you encounter on the [issues](https://github.com/Cerberus-ik/rr-live/issues) page.
+
+### It's not actually live is it?
+Kinda, we want the fastest possible updates for the users. We are currently moving to our own server. This gives us the
+flexibility to keep our [GG](https://github.com/Cerberus-ik/rr-live/tree/master/Riot-GG) running all the time. When we start running [GTAD](https://github.com/Cerberus-ik/rr-live/tree/master/Games-To-Ajax-Data) every 5 or 10 minutes you will 
+get almost real time statistics. That's why you see such a big drop off in the amount of games the site analyzes since
+there are less games to analyze.
 
 ### What we learned from this project and what we plan for the future
 Everything went together quite quickly and we had a prototype up and running in 3-5 hours. The biggest challenge we 
@@ -35,10 +49,16 @@ In the first days we expected a strong tendency to pick already known runes.
     current top 3 runes do absolutely nothing in the jungle.
     - We have many runes that see almost no play even tho they might be useful. Every rune tree has at least one rune 
     that almost nobody plays. Maybe a slight over buff can help to show players what a certain rune can do.
+    
+### Design choices    
+We completely redrew the map from scratch as a svg. Don't get me wrong the original looks pretty good but it did not 
+scale well since it is a png file. But this allowed us to give the map our very own custom color scheme. The result 
+should speak for itself. Even tho many hours went into designing the map the result was worth it     
+    
 ### First conceptual design
 ![Image](https://github.com/Cerberus-ik/rr-live/blob/master/resources/images/rr-live.png)
 
-### Why are 80% of this project written in java?
+### Why are 70% of this project written in java?
 Almost the whole backend is written in java, but why tho? Since we splitted the project into the front end ``Garry`` and
 the backend and data aggregation ``(Cerberus-ik)`` both of us used technologies we are familiar with. I ``(Cerberus-ik)`` 
 mainly work with java and I knew that java could handle every single task we threw at it. ``Garry`` on the other hand 
@@ -156,7 +176,7 @@ priority for us. But we already started implementing 4k support. Lets say it is 
 Mobile support on the other hand is a bit more complicated. The site would look somewhat odd on such small screens and 
 would not work in the intended way. So full mobile support is still somewhat far away. 
 
-### Disclaimer
+### Legal disclaimer
 RR-Live isn't endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially 
 involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered 
 trademarks of Riot Games, Inc. League of Legends © Riot Games, Inc.
