@@ -10,12 +10,12 @@ the [main site](https://cerberus.my.to/). Since they use the same backend api.
 The server is hosted in EUW we don't know how well the site performs in NA or other regions. We expect some longer load
 times. If you are interested why the site takes different amounts of time to load take a look in the [rr-live](https://github.com/Cerberus-ik/rr-live/tree/master/rr-live) folder.
 We strongly recommend checking out all the folders since they contain a more in depth explanation on what they do.
-We apologize for every english related misstate we made in this project. Both maintainers are not native speakers. If 
-you find a mistakes or want to correct the documentation in any way feel free to create a pull request.
+We apologize for every english related mistakes we made in this project. Both maintainers are not native speakers. If 
+you find a mistake or want to correct the documentation in any way feel free to create a pull request.
 Please report errors or bugs you encounter on the [issues](https://github.com/Cerberus-ik/rr-live/issues) page.
 
 ### It's not actually live is it?
-Kinda, we want the fastest possible updates for the users. We are currently moving to our own server. This gives us the
+Kinda we want the fastest possible updates for the users. We are currently moving to our own server. This gives us the
 flexibility to keep our [GG](https://github.com/Cerberus-ik/rr-live/tree/master/Riot-GG) running all the time. When we start running [GTAD](https://github.com/Cerberus-ik/rr-live/tree/master/Games-To-Ajax-Data) every 5 or 10 minutes you will 
 get almost real time statistics. That's why you see such a big drop off in the amount of games the site analyzes since
 there are less games to analyze.
@@ -28,20 +28,20 @@ Throughout the developing process we were sure that we would have a polished pro
 That was until our database broke down 2 days before the deadline and our new database had corrupted data in it. But we 
 managed to fix those problems rather quickly with our new ``v2 Programs``.  
 No matter how well we do in the Api challenge we plan on continuing our support for this project. We think we have 
-something on our hands that could be successful in the future as a standalone website. 
+something in our hands that could be successful in the future as a standalone website. 
 
 ### What we expected from our results
 In the first days we expected a strong tendency to pick already known runes. 
 - Electrocute aka Thunder Lord is a big player favorite so it will probably rise in popularity and fall off after 
   players discover the new runes.
-- To be honest the arcane comet was probably a bit over buffed in 7.23 but after the recent nerves we expect a fall off 
+- To be honest the arcane comet was probably a bit over buffed in 7.23 but after the recent nerfs we expect a fall off 
   in its pick rate for later games.
 - We think that more complicated runes like the unsealed spell book will see a rise in the next weeks. With time players 
   understand what makes a rune strong and figure out new ways to play it. This is especially true for utility runes.
 
 ### What we learned from the results
 - ``Press the Attack`` is by far the most picked rune with pick rates over 50%! That is incredible.
-  Even tho the nerves in ``7.24`` helped bringing more variety to the bot lane.
+  Even tho the nerfs in ``7.24`` helped bringing more variety to the bot lane.
 - Yep Electrocute is pretty popular in the mid lane
 - Top lane has the most variety in runes with no clear winner after the first few weeks. 
 - What needs some improvements:
@@ -67,7 +67,7 @@ We went from a 5 minute paint sketch to this hand drawn svg map.
 The concept is the same but you could say the finished version looks a bit more polished :)
 
 ### Why are 70% of this project written in java?
-Almost the whole backend is written in java, but why tho? Since we splitted the project into the front end ``Garry`` and
+Almost the whole backend is written in java, but why though? Since we splitted the project into the front end ``Garry`` and
 the backend and data aggregation ``(Cerberus-ik)`` both of us used technologies we are familiar with. I ``(Cerberus-ik)`` 
 mainly work with java and I knew that java could handle every single task we threw at it. ``Garry`` on the other hand 
 worked a lot with [MDL](https://getmdl.io/index.html) in the past so it was the obvious choice. We still experimented with new stuff
@@ -90,13 +90,13 @@ refer to their respected folders.
 
 ##### Step 0: Get some summoners to base the data on
 We started with 5000 Summoners from EUW that are Platinum or higher. 
-The data did not come from us. A friendly Member of the Riot-Api Discord provided 
+The data did not come from us. A friendly member of the Riot-Api Discord provided 
 us with the necessary data. This sped up the development process but we don't want to rely on the data forever and so 
 we created our own solution: the [SG](https://github.com/Cerberus-ik/rr-live/tree/master/Riot-SG) short for Summoner gatherer. It basically starts with one summoner and gets every single 
 player from his/her League. Afterwards [SG](https://github.com/Cerberus-ik/rr-live/tree/master/Riot-SG) searches through every single ranked game from them that they played this season. 
-Afterwards we filter for players that are plat or higher and save their ranked leagues temporarily. 
+Afterwards we filter for players that are platinum or higher and save their ranked leagues temporarily. 
 And finally we just get the summoners from every single league and save some basic information like their ``id and region`` 
-in a single json file. This is down once but we consider doing it again and doing some more intense filtering. Because some players are inactive and 
+in a single json file. This is done once but we consider doing it again and doing some more intense filtering. Because some players are inactive and 
 basically useless for further data gathering. 
 
 ##### Step 1: Get the actual data
@@ -110,7 +110,7 @@ if you want to know more about this step.
 ##### Step 2: Convert the data
 This step takes the thousand of games we got from the api and puts them in a nice and compact format for our second database to store.  
 That's why the program is called [GTAD](https://github.com/Cerberus-ik/rr-live/tree/master/Games-To-Ajax-Data) (games-to-ajax-data). "All" the program basically does is read out the afford mentioned 
-database and count out the runes. Take a look in the [GTAD](https://github.com/Cerberus-ik/rr-live/tree/master/Games-To-Ajax-Data) directory for a more detailed explanation. 
+database and count the runes. Take a look in the [GTAD](https://github.com/Cerberus-ik/rr-live/tree/master/Games-To-Ajax-Data) directory for a more detailed explanation. 
 
 ##### Step 3: Store the data
 We use a different MySql database to store our formatted data. [GTAD](https://github.com/Cerberus-ik/rr-live/tree/master/Games-To-Ajax-Data) does the storing process by itself. 
@@ -119,7 +119,7 @@ the steps we gather and split up data. We choose 12h as a start so we don't need
 3 hours.
 
 ##### Step 4: The backend api
-Our [backend-api](https://github.com/Cerberus-ik/rr-live/tree/master/Backend-Api) is a plain REST api. Not fancy but it it's job.
+Our [backend-api](https://github.com/Cerberus-ik/rr-live/tree/master/Backend-Api) is a plain REST api. Not fancy but it's job.
 The frontend is almost completely build in javascript. This means we need a way to protect our database from unwanted access. 
 We chose [Spark](http://sparkjava.com/) a simple java based solution to build our own REST Api on top of it. 
 In hindsight all of this is a bit over engineered but it gives us the flexibility we need and want.
@@ -132,8 +132,8 @@ are interested in the code that went into the project.
 The frontend calls our own backend api to get the data in a json format and displays them to the user.
 
 ### Installation
-If you want to can take any of the programs and make your own changes to them or just try them out for fun.
-You need to create a config.json tho. Put it in a resource folder that is located in the main directory. All programs
+If you want you can take any of the programs and make your own changes to them or just try them out for fun.
+You need to create a config.json though. Put it in a resource folder that is located in the main directory. All programs
 use this config file and share one api key. This project was written under a strict deadline. We did not focus on
 usability for different environments if you want to copy one or more projects from this repository do it but you have
 to put some work into it to get it working.
@@ -184,6 +184,13 @@ priority for us. But we already started implementing 4k support. Lets say it is 
 Mobile support on the other hand is a bit more complicated. The site would look somewhat odd on such small screens and 
 would not work in the intended way. So full mobile support is still somewhat far away. 
 
+### Bottom line
+We have to thank everyone that helped us with this project and in the past. The Discord community is a nice place to get
+into the riot api and find people who can and wand to help you with your projects.
+
+We want to thank PaulPacMan for helping us with the english documentation. There will still be some errors left since
+the documentation evolved throughout the project. If you find any pleas don't hesitate and create a pull request to help
+us improving the documentation. 
 ### Legal disclaimer
 RR-Live isn't endorsed by Riot Games and does not reflect the views or opinions of Riot Games or anyone officially 
 involved in producing or managing League of Legends. League of Legends and Riot Games are trademarks or registered 

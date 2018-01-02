@@ -1,6 +1,6 @@
 # GTAD-LEGACY
 ### Why legacy?
-We abandoned to try and save every game in a separate file. It worked. For a while.
+We abandoned trying to save every game in a separate file. It worked. For a while.
 But eventually the file overhead became to big and process of analyzing and converting the 
 data to slow.
 

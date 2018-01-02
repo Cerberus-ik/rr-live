@@ -5,8 +5,8 @@ We wanted a scalable solution that's why we wrote this program.
 After a first test run we managed to get ``92423`` summoners that are platinum or higher.
 
 ### v2 is planned
-After [GTAD](https://github.com/Cerberus-ik/rr-live/tree/master/Games-To-Ajax-Data) and [GG](https://github.com/Cerberus-ik/rr-live/tree/master/Riot-GG) we want to make this fully database based.
-We currently don't have to since the ``SG`` runs pretty rarely but a v2 is definitely in the pipeline.
+After [GTAD](https://github.com/Cerberus-ik/rr-live/tree/master/Games-To-Ajax-Data) and [GG](https://github.com/Cerberus-ik/rr-live/tree/master/Riot-GG) we want to make this fully project mysql based.
+But we currently don't have to since the ``SG`` runs pretty rarely but a v2 is definitely in the pipeline.
 
 ### How does it work?
 
@@ -16,7 +16,7 @@ We use the summoner api to save the response in memory temporarily.
 
 #### Step 1 Get match participants
 Next we get the ``MatchList`` from the summoner and filter for the current season so we 
-don't get a reasonable response size. The matches in the ``MatchList`` already contain the summoner 
+get a reasonable response size. The matches in the ``MatchList`` already contain the summoner 
 ids so we can save them for later after we filtered them for duplicates.
 
 #### Step 2 Get high elo leagues
@@ -26,7 +26,7 @@ and filter them for Platinum+.
 
 #### Step 3 Get the actual summoners
 After all the above mentioned steps we should have a few hundred leagues. Depending on the amount
-of games the base summoner played. The only thing left to do ist to get the actual ``League`` with
+of games the base summoner played. The only thing left to do is to get the actual ``League`` with
 the League api and get all the summoners in it. We always filter for duplicates since a player could
 be Platinum or higher in multiple queues (FlexQ and SoloQ).
 

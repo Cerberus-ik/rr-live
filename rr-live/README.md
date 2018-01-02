@@ -7,7 +7,7 @@ We have our own icons laying on the server so we can load them quickly. The rune
 the DDragon api. We reuse them later for multiple features like: displaying them on the map or in the all time records.
 
 ### AJAX
-We use quite a lot of ajax. Much of the gets loaded while you see the loading circle rotating. The rune names and some
+We use quite a lot of ajax. Much gets loaded while you see the loading circle rotating. The rune names and some
 basic stats like the total analyzed runes all get loaded during this loading screen. The actual statistics on the other
 hand all load while the user is on the site. We can specify the amount of so called ids(steps in which runes get 
 analyzed, currently 12h apart) that we load at once. We experimented with a few options how we want to load the data.

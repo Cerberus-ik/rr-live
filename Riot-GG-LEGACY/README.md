@@ -43,7 +43,7 @@ A full game on the other hand takes up around 28kb of space. We save around 94.6
 
 #### Step 5 save the game
 Since part 4 and 5 are booth multi threaded we are not to worried about performance here. But we still want
-to get a server in the future so we longer have to deal with thousands of files in a single folder.
+to get a server in the future so we no longer have to deal with thousands of files in a single folder.
 But to get the best performance out of our current setup we use the [BufferedWriter](https://docs.oracle.com/javase/7/docs/api/java/io/BufferedWriter.html) for
 decent performance.
 

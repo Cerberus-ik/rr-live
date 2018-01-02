@@ -34,7 +34,7 @@ out the games we don't already have parsed and got played after RR got implement
 Next we create a ``Runnable`` for each game a summoner has played and that fulfils our criteria. 
 
 #### Step 3 get the games
-Do avoid duplicated games we only multi thread the process of getting all the games with the ``getMatch``
+To avoid duplicated games we only multi thread the process of getting all the games with the ``getMatch``
 api. This takes only a few milliseconds depending on the amount of games a summoner has played since the
 last check.  
 
@@ -46,11 +46,13 @@ A full game on the other hand takes up around 28kb of space. With this process w
 #### Step 5 save the game
 We currently store all games in a local mysql database.
 Our current database looks somewhat like this:
+
 | gameId      | region    | game             |timestamp      |
 | ----------- |:---------:| ----------------:|--------------:|
 | 123         | EUW1      | {"json":"data"}  | 1511718058731 |
 | 234         | NA1       | {"json":"data"}  | 1511751558731 | 
 | 345         | EUW1      | {"json":"data"}  | 1532311054731 | 
+
 ### The result
 Our games look all somewhat like this. We have our ``game`` object for the ``GTAD``. So it knows what to do
 with all the data. The index at the start of every single value is our player/participant id. It is consistent
