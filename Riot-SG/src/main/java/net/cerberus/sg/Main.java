@@ -1,56 +1,57 @@
 package net.cerberus.sg;
 
 import net.cerberus.riotApi.api.RiotApi;
-import net.cerberus.riotApi.common.Summoner;
 import net.cerberus.riotApi.common.constants.Region;
 import net.cerberus.riotApi.exception.InvalidApiKeyException;
 import net.cerberus.riotApi.exception.RiotApiRequestException;
-import net.cerberus.sg.logs.LogLevel;
-import net.cerberus.sg.logs.LogReason;
-import net.cerberus.sg.logs.Logger;
+import net.cerberus.sg.db.DatabaseManager;
+import net.cerberus.sg.events.RiotApiListener;
+import net.cerberus.sg.logger.LogLevel;
+import net.cerberus.sg.logger.LogReason;
+import net.cerberus.sg.logger.Logger;
 import org.json.JSONObject;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 
 public class Main {
 
     public static void main(String[] args) {
         Logger.logMessage("Starting to gather summoners.", LogLevel.INFO, LogReason.SG);
         StringBuilder credentialsStringBuilder = new StringBuilder();
-        StringBuilder summonerStringBuilder = new StringBuilder();
         try {
             BufferedReader credentialsBufferedReader = new BufferedReader(new FileReader(new File("resources/config.json")));
-            BufferedReader summonersBufferedReader = new BufferedReader(new FileReader(new File("resources/sg-summoners.json")));
-            summonersBufferedReader.lines().forEach(summonerStringBuilder::append);
             credentialsBufferedReader.lines().forEach(credentialsStringBuilder::append);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         JSONObject credentials = new JSONObject(credentialsStringBuilder.toString());
-        JSONObject summoners = new JSONObject(summonerStringBuilder.toString());
+        DatabaseManager databaseManager = new DatabaseManager(
+                credentials.getJSONObject("sg-config").getJSONObject("database").getString("db_user"),
+                credentials.getJSONObject("sg-config").getJSONObject("database").getString("db_pw"),
+                credentials.getJSONObject("sg-config").getJSONObject("database").getString("host"),
+                credentials.getJSONObject("sg-config").getJSONObject("database").getString("db")
+        );
         try {
-            RiotApi riotApi = new RiotApi(credentials.getString("key"), 5000);
             Region region = Region.parseRegionByPlatformId(credentials.getJSONObject("sg-config").getString("summoner-region"));
-            Summoner summoner = riotApi.summonerApi.getSummonerByName(credentials.getJSONObject("sg-config").getString("summoner-name"), region);
-            DataFetcher dataFetcher = new DataFetcher(riotApi, summoner, region, summoners, credentials.getJSONObject("sg-config").getInt("coolDownBetweenCalls"));
-            dataFetcher.start(credentials.getJSONObject("sg-config").getInt("summonerLimit"));
-            saveData(dataFetcher.getData());
-        } catch (RiotApiRequestException e) {
-            System.out.println(e.getResponseCode());
-            e.printStackTrace();
-        } catch (InvalidApiKeyException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void saveData(JSONObject data) {
-        try {
-            BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(new File("resources/sg-summoners.json")));
-            bufferedWriter.write(data.toString());
-            bufferedWriter.flush();
-            bufferedWriter.close();
-            Logger.logMessage("Summoners got saved successfully.", LogLevel.INFO, LogReason.SG);
-        } catch (IOException e) {
+            String summonerName = credentials.getJSONObject("sg-config").getString("summoner-name");
+            Logger.logMessage("Starting with: " + summonerName + " from " + region.getName().toUpperCase(), LogLevel.INFO, LogReason.PARSER);
+            RiotApi riotApi = new RiotApi(credentials.getString("key"), 3000);
+            riotApi.getEventManager().registerEventListener(new RiotApiListener());
+            DataFetcher dataFetcher = new DataFetcher(
+                    riotApi,
+                    riotApi.summonerApi.getSummonerByName(summonerName, region),
+                    region,
+                    credentials.getJSONObject("sg-config").getInt("updateBulk"),
+                    credentials.getJSONObject("sg-config").getInt("saveBulk"),
+                    databaseManager);
+            if(credentials.getJSONObject("sg-config").getBoolean("updateAllSummoners")){
+                dataFetcher.updateSummoners();
+            }
+            dataFetcher.start();
+        } catch (InvalidApiKeyException | RiotApiRequestException e) {
             e.printStackTrace();
         }
     }

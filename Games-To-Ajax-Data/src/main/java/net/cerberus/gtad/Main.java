@@ -4,9 +4,9 @@ import net.cerberus.gtad.common.DatabaseCredentials;
 import net.cerberus.gtad.common.Role;
 import net.cerberus.gtad.common.TimeStep;
 import net.cerberus.gtad.db.TargetDatabaseManager;
-import net.cerberus.gtad.io.logs.LogLevel;
-import net.cerberus.gtad.io.logs.LogReason;
-import net.cerberus.gtad.io.logs.Logger;
+import net.cerberus.gtad.io.logger.LogLevel;
+import net.cerberus.gtad.io.logger.LogReason;
+import net.cerberus.gtad.io.logger.Logger;
 import net.cerberus.riotApi.api.RiotApi;
 import net.cerberus.riotApi.exception.InvalidApiKeyException;
 import net.cerberus.riotApi.exception.RiotApiRequestException;
@@ -47,8 +47,7 @@ public class Main {
     }
 
     private static void pushSteps(List<TimeStep> steps, long firstGame, DatabaseCredentials databaseCredentials) {
-        TargetDatabaseManager targetDatabaseManager = new TargetDatabaseManager(databaseCredentials, "backend-api");
-        targetDatabaseManager.connect();
+        TargetDatabaseManager targetDatabaseManager = new TargetDatabaseManager(databaseCredentials);
         targetDatabaseManager.truncateDatabase();
         JSONArray runeIdOrder = getRuneIdsInOrder(dataDragonRunesReforged());
         steps.forEach(step -> {
@@ -69,7 +68,6 @@ public class Main {
             }
             targetDatabaseManager.updateId(step.id, stepObject.toString());
         });
-        targetDatabaseManager.closeConnection();
     }
 
     private static JSONArray dataDragonRunesReforged() {

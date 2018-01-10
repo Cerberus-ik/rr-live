@@ -4,9 +4,9 @@ import net.cerberus.gtad.common.DatabaseCredentials;
 import net.cerberus.gtad.common.Role;
 import net.cerberus.gtad.common.TimeStep;
 import net.cerberus.gtad.db.SourceDatabaseManager;
-import net.cerberus.gtad.io.logs.LogLevel;
-import net.cerberus.gtad.io.logs.LogReason;
-import net.cerberus.gtad.io.logs.Logger;
+import net.cerberus.gtad.io.logger.LogLevel;
+import net.cerberus.gtad.io.logger.LogReason;
+import net.cerberus.gtad.io.logger.Logger;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;

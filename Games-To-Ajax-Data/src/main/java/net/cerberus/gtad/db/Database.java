@@ -2,9 +2,9 @@ package net.cerberus.gtad.db;
 
 
 import net.cerberus.gtad.common.DatabaseCredentials;
-import net.cerberus.gtad.io.logs.LogLevel;
-import net.cerberus.gtad.io.logs.LogReason;
-import net.cerberus.gtad.io.logs.Logger;
+import net.cerberus.gtad.io.logger.LogLevel;
+import net.cerberus.gtad.io.logger.LogReason;
+import net.cerberus.gtad.io.logger.Logger;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

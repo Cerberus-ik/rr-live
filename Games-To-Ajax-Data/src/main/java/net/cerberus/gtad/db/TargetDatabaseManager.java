@@ -1,59 +1,50 @@
 package net.cerberus.gtad.db;
 
+import com.mysql.cj.jdbc.MysqlDataSource;
 import net.cerberus.gtad.common.DatabaseCredentials;
-import net.cerberus.gtad.io.logs.LogLevel;
-import net.cerberus.gtad.io.logs.LogReason;
-import net.cerberus.gtad.io.logs.Logger;
+import net.cerberus.gtad.io.logger.LogLevel;
+import net.cerberus.gtad.io.logger.LogReason;
+import net.cerberus.gtad.io.logger.Logger;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 public class TargetDatabaseManager {
 
-    private Database database;
-    private DatabaseCredentials databaseCredentials;
-    private String table;
+    private MysqlDataSource dataSource;
 
-    public TargetDatabaseManager(DatabaseCredentials databaseCredentials, String table) {
-        this.databaseCredentials = databaseCredentials;
-        this.table = table;
-    }
-
-    public void connect() {
+    public TargetDatabaseManager(DatabaseCredentials databaseCredentials) {
         Logger.logMessage("Connecting to target db.", LogLevel.INFO, LogReason.DB);
-        this.database = new Database(this.databaseCredentials);
-        ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1);
-        this.database.connect();
-        scheduledExecutorService.scheduleAtFixedRate(() -> {
-            this.database.closeConnection();
-            this.database.connect();
-        }, 30, 30, TimeUnit.MINUTES);
-    }
-
-    public void closeConnection() {
-        this.database.closeConnection();
+        this.dataSource = new MysqlDataSource();
+        this.dataSource.setUser(databaseCredentials.getUser());
+        this.dataSource.setPassword(databaseCredentials.getPassword());
+        this.dataSource.setServerName(databaseCredentials.getHost());
+        this.dataSource.setURL("jdbc:mysql://" + databaseCredentials.getHost() + "/" + databaseCredentials.getDatabase() + "?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC");
     }
 
     public void truncateDatabase() {
         try {
-            PreparedStatement preparedStatement = this.database.getConnection().prepareStatement("TRUNCATE TABLE `backend-api`");
+            Connection connection = this.dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("TRUNCATE TABLE `backend-api`");
             preparedStatement.executeUpdate();
+            connection.close();
+            preparedStatement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        Logger.logMessage("Truncated database.", LogLevel.INFO, LogReason.DB);
+        Logger.logMessage("Truncated the database.", LogLevel.INFO, LogReason.DB);
     }
 
     public void updateId(int id, String content) {
         try {
-            PreparedStatement preparedStatement = this.database.getConnection().prepareStatement("INSERT INTO `backend-api` (id, content) VALUES(?, ?);");
+            Connection connection = this.dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO `backend-api` (id, content) VALUES(?, ?);");
             preparedStatement.setInt(1, id);
             preparedStatement.setString(2, content);
             preparedStatement.executeUpdate();
             preparedStatement.close();
+            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }

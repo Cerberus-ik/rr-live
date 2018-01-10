@@ -1,8 +1,8 @@
 package net.cerberus.gg;
 
-import net.cerberus.gg.io.logs.LogLevel;
-import net.cerberus.gg.io.logs.LogReason;
-import net.cerberus.gg.io.logs.Logger;
+import net.cerberus.gg.io.logger.LogLevel;
+import net.cerberus.gg.io.logger.LogReason;
+import net.cerberus.gg.io.logger.Logger;
 import net.cerberus.riotApi.api.RiotApi;
 import net.cerberus.riotApi.common.Summoner;
 import net.cerberus.riotApi.common.constants.Region;

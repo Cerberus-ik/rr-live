@@ -4,149 +4,108 @@ import net.cerberus.riotApi.api.RiotApi;
 import net.cerberus.riotApi.common.Summoner;
 import net.cerberus.riotApi.common.constants.Queue;
 import net.cerberus.riotApi.common.constants.Region;
-import net.cerberus.riotApi.common.constants.ResponseCode;
 import net.cerberus.riotApi.common.constants.Season;
 import net.cerberus.riotApi.common.league.League;
-import net.cerberus.riotApi.common.league.LeagueEntry;
-import net.cerberus.riotApi.common.league.LeaguePosition;
 import net.cerberus.riotApi.common.match.Match;
 import net.cerberus.riotApi.common.match.MatchList;
 import net.cerberus.riotApi.common.match.MatchListMatch;
 import net.cerberus.riotApi.common.match.ParticipantIdentity;
 import net.cerberus.riotApi.exception.RiotApiRequestException;
-import net.cerberus.sg.logs.LogLevel;
-import net.cerberus.sg.logs.LogReason;
-import net.cerberus.sg.logs.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.cerberus.sg.db.DatabaseManager;
+import net.cerberus.sg.logger.LogLevel;
+import net.cerberus.sg.logger.LogReason;
+import net.cerberus.sg.logger.Logger;
+import net.cerberus.sg.runnables.LeagueEntrySaverRunnable;
+import net.cerberus.sg.runnables.SummonerUpdateRunnable;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class DataFetcher {
 
     private RiotApi riotApi;
     private Summoner summoner;
     private Region region;
-    private JSONObject data;
-    private List<Long> summonerIds;
-    private List<String> leagueIds;
-    private int cooldown;
+    private List<net.cerberus.sg.common.Summoner> summoners;
+    private DatabaseManager databaseManager;
+    private int updateBulk;
+    private int saveBulk;
 
-    DataFetcher(RiotApi riotApi, Summoner summoner, Region region, JSONObject data, int cooldown) {
+    DataFetcher(RiotApi riotApi, Summoner summoner, Region region, int updateBulk, int saveBulk, DatabaseManager databaseManager) {
         this.riotApi = riotApi;
         this.summoner = summoner;
         this.region = region;
-        this.data = data;
-        this.summonerIds = new ArrayList<>();
-        this.leagueIds = new ArrayList<>();
-        this.cooldown = cooldown;
+        this.updateBulk = updateBulk;
+        this.saveBulk = saveBulk;
+        this.databaseManager = databaseManager;
+        this.summoners = this.databaseManager.getSummoners();
     }
 
-    public void start(int limit) {
-        this.readData();
-        if (data.getJSONArray("data").length() >= limit) {
-            Logger.logMessage("SG has already enough gathered summoners.", LogLevel.INFO, LogReason.SG);
-            return;
-        } else {
-            Logger.logMessage("Targeting " + limit + " summoners.", LogLevel.INFO, LogReason.SG);
-        }
-
-        /* Gets the start users league */
-        League league = this.getLeagueFromUser(this.summoner.getId());
-        if (league == null) {
-            Logger.logMessage("Base summoner is not in a league.", LogLevel.WARNING, LogReason.SG);
-        } else if (this.isTierAllowed(league.getTier())) {
-            this.leagueIds.add(league.getLeagueId());
-        } else {
-            Logger.logMessage("Base summoners solo league is to low.", LogLevel.WARNING, LogReason.SG);
-        }
+    public void start() {
+        List<String> leagueIds = new ArrayList<>();
+        Logger.logMessage("Starting with " + summoners.size() + " summoners.", LogLevel.INFO, LogReason.PARSER);
+        Logger.logMessage("Updating summoners...", LogLevel.INFO, LogReason.PARSER);
         try {
-            Thread.sleep(this.cooldown);
             MatchList matchList = this.riotApi.matchApi.getMatchListByAccountId(this.summoner.getAccountId(), this.region, Queue.TEAM_BUILDER_RANKED_SOLO, null, null, null, null, Season.SEASON2017, null);
             for (MatchListMatch matchListMatch : matchList.getMatches()) {
-                Thread.sleep(this.cooldown);
                 Match match = this.riotApi.matchApi.getMatchById(matchListMatch.getGameId(), this.region);
                 for (ParticipantIdentity participant : match.getParticipantIdentities()) {
-                    Thread.sleep(this.cooldown);
-                    this.riotApi.leagueApi.getPositionBySummoner(participant.getPlayer().getSummonerId(), this.region)
-                            .stream()
-                            .filter(leaguePosition -> this.isTierAllowed(leaguePosition.getTier()) && !this.leagueIds.contains(leaguePosition.getLeagueId()))
-                            .forEach(leaguePosition -> {
-                                this.leagueIds.add(leaguePosition.getLeagueId());
-                                Logger.logMessage("Found a new league: " + leaguePosition.getLeagueId(), LogLevel.INFO, LogReason.SG);
-                            });
+                    try {
+                        this.riotApi.leagueApi.getPositionBySummoner(participant.getPlayer().getSummonerId(), this.region)
+                                .stream()
+                                .filter(leaguePosition -> this.isTierAllowed(leaguePosition.getTier()) && !leagueIds.contains(leaguePosition.getLeagueId()))
+                                .forEach(leaguePosition -> {
+                                    leagueIds.add(leaguePosition.getLeagueId());
+                                    Logger.logMessage("Found a new league: " + leaguePosition.getLeagueId(), LogLevel.INFO, LogReason.SG);
+                                });
+                    }catch (RiotApiRequestException e){
+                        e.printStackTrace();
+                        e.getResponseCode();
+                    }
                 }
             }
-        } catch (RiotApiRequestException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        this.parseLeagueMembersToJson();
-        int finishingSize = this.data.getJSONArray("data").length();
-        DecimalFormat decimalFormat = new DecimalFormat("##.00");
-        Logger.logMessage("Finished with " + finishingSize + " summoners. " + decimalFormat.format(limit / this.data.getJSONArray("data").length()), LogLevel.INFO, LogReason.SG);
-    }
-
-    private void readData() {
-        if (!this.data.has("data")) {
-            this.data.put("data", new JSONArray());
-        }
-        for (int i = 0; i < this.data.getJSONArray("data").length(); i++) {
-            this.summonerIds.add(this.data.getJSONArray("data").getJSONObject(i).getLong("summonerId"));
-        }
-        Logger.logMessage("Starting with " + this.data.getJSONArray("data").length() + " summoners.", LogLevel.INFO, LogReason.SG);
-    }
-
-    private void parseLeagueMembersToJson() {
-        Logger.logMessage("Found " + this.leagueIds.size() + " leagues.", LogLevel.INFO, LogReason.SG);
-        this.leagueIds.forEach(leagueId -> {
-            try {
-                Thread.sleep(this.cooldown);
-                League league = this.riotApi.leagueApi.getLeagueById(leagueId, this.region);
-                for (LeagueEntry leagueEntry : league.getEntries().stream().filter(leagueEntry -> !this.summonerIds.contains(Long.valueOf(leagueEntry.getPlayerOrTeamId()))).collect(Collectors.toList())) {
-                    JSONObject summonerObject = new JSONObject();
-                    summonerObject.put("summonerId", Long.valueOf(leagueEntry.getPlayerOrTeamId()));
-                    summonerObject.put("platformId", this.region.getPlatformId());
-                    summonerObject.put("rank", leagueEntry.getRank());
-                    summonerObject.put("tier", league.getTier());
-                    this.data.getJSONArray("data").put(summonerObject);
-                }
-            } catch (RiotApiRequestException e) {
-                e.getResponseCode();
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
-    private League getLeagueFromUser(long summonerId) {
-        try {
-            Thread.sleep(this.cooldown);
-            LeaguePosition leaguePosition = this.riotApi.leagueApi.getPositionBySummoner(summonerId, this.region)
-                    .stream()
-                    .filter(leaguePositionStream -> leaguePositionStream.getQueueType()
-                            .equals(Queue.RANKED_SOLO_5x5.name()))
-                    .findFirst().orElseThrow(NullPointerException::new);
-            Thread.sleep(this.cooldown);
-            return this.riotApi.leagueApi.getLeagueById(leaguePosition.getLeagueId(), this.region);
         } catch (RiotApiRequestException e) {
-            if (!e.getResponseCode().equals(ResponseCode.INTERNAL_SERVER_ERROR) && !e.getResponseCode().equals(ResponseCode.DATA_NOT_FOUND)) {
+            e.printStackTrace();
+            e.getResponseCode();
+        }
+        this.saveSummoners(leagueIds);
+    }
+
+    private void saveSummoners(List<String> leagueIds) {
+        Logger.logMessage("Saving summoners....", LogLevel.INFO, LogReason.PARSER);
+        for (int i = 0; i < leagueIds.size(); i++) {
+            try {
+                League league = this.riotApi.leagueApi.getLeagueById(leagueIds.get(i), this.region);
+                ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(this.saveBulk);
+                league.getEntries().forEach(leagueEntry -> scheduledExecutorService.execute(new LeagueEntrySaverRunnable(leagueEntry, league, this.region, this.databaseManager)));
+                scheduledExecutorService.awaitTermination(30, TimeUnit.SECONDS);
+                Logger.logMessage("Finished with league: " + i + "/" + leagueIds.size(), LogLevel.INFO, LogReason.PARSER);
+            } catch (RiotApiRequestException | InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void updateSummoners() {
+        Logger.logMessage("Updating " + this.updateBulk + " users at a time.", LogLevel.INFO, LogReason.PARSER);
+        Iterator<net.cerberus.sg.common.Summoner> summonerIterator = this.summoners.iterator();
+        ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(this.updateBulk);
+        while (summonerIterator.hasNext()) {
+            scheduledExecutorService.execute(new SummonerUpdateRunnable(summonerIterator.next(), this.databaseManager, this.riotApi));
+        }
+        try {
+            scheduledExecutorService.awaitTermination(60, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return null;
     }
 
     private boolean isTierAllowed(String tier) {
         return tier.equals("PLATINUM") || tier.equals("CHALLENGER") || tier.equals("DIAMOND") || tier.equals("MASTER");
     }
 
-    public JSONObject getData() {
-        return data;
-    }
 }

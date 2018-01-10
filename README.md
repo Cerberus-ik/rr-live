@@ -140,35 +140,42 @@ to put some work into it to get it working.
 Nevertheless the config should look somewhat like this:
 ```json
 {
-  "key":"project-api-key",
+  "key": "project-api-key",
   "sg-config": {
     "summoner-region": "EUW1",
-    "summoner-name": "summonerName",
-    "summonerLimit": 10000,
-    "coolDownBetweenCalls": 0
+    "summoner-name": "summoner name",
+    "updateAllSummoners": false,
+    "updateBulk": 2,
+    "saveBulk": 2,
+    "database": {
+      "host": "",
+      "db": "",
+      "db_pw": "",
+      "db_user": ""
+    }
   },
   "gg-config": {
     "coolDownBetweenCalls": 0,
     "summonerBulk": 25,
     "database": {
-      "host": "host",
-      "db": "db",
-      "db_pw": "pw",
-      "db_user": "user"
+      "host": "",
+      "db": "",
+      "db_pw": "",
+      "db_user": ""
     }
   },
   "gtad-config": {
     "sourceDatabase": {
-      "host": "host",
-      "db": "db",
-      "db_pw": "pw",
-      "db_user": "user"
+      "host": "",
+      "db": "",
+      "db_pw": "",
+      "db_user": ""
     },
     "targetDatabase": {
-      "host": "host",
-      "db": "db",
-      "db_pw": "pw",
-      "db_user": "user"
+      "host": "",
+      "db": "",
+      "db_pw": "",
+      "db_user": ""
     }
   }
 }

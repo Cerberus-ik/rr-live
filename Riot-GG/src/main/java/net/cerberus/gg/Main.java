@@ -1,9 +1,9 @@
 package net.cerberus.gg;
 
 import net.cerberus.gg.db.DatabaseManager;
-import net.cerberus.gg.io.logs.LogLevel;
-import net.cerberus.gg.io.logs.LogReason;
-import net.cerberus.gg.io.logs.Logger;
+import net.cerberus.gg.io.logger.LogLevel;
+import net.cerberus.gg.io.logger.LogReason;
+import net.cerberus.gg.io.logger.Logger;
 import net.cerberus.riotApi.api.RiotApi;
 import net.cerberus.riotApi.common.Summoner;
 import net.cerberus.riotApi.common.constants.Queue;
@@ -33,7 +33,6 @@ public class Main {
     private static int coolDown;
     private static List<Long> games;
 
-    @SuppressWarnings("Duplicates")
     public static void main(String[] args) {
         games = new ArrayList<>();
         StringBuilder stringBuilder = new StringBuilder();
@@ -47,7 +46,7 @@ public class Main {
         }
         JSONObject configFileObject = new JSONObject(stringBuilder.toString());
         coolDown = configFileObject.getJSONObject("gg-config").getInt("coolDownBetweenCalls");
-        JSONObject databaseConfig = configFileObject.getJSONObject("gg-config").getJSONObject("database");
+        JSONObject databaseConfig = configFileObject.getJSONObject("gg-config").getJSONObject("game-database");
         DatabaseManager databaseManager = new DatabaseManager(
                 databaseConfig.getString("db_user"),
                 databaseConfig.getString("db_pw"),
@@ -154,7 +153,6 @@ public class Main {
      * This method was used to slow down the game gathering process.
      * With a much more powerful api key this is no longer necessary.
      */
-    @Deprecated
     private static void sleep() {
         if (coolDown <= 0) {
             return;

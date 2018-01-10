@@ -1,12 +1,14 @@
-# SG – Summoner Gatherer 
+# SG – Summoner Gatherer v2
 This part of rr-live feeds the other data gathering programs with summoners.
 We wanted a scalable solution that's why we wrote this program.
 
 After a first test run we managed to get ``92423`` summoners that are platinum or higher.
 
-### v2 is planned
-After [GTAD](https://github.com/Cerberus-ik/rr-live/tree/master/Games-To-Ajax-Data) and [GG](https://github.com/Cerberus-ik/rr-live/tree/master/Riot-GG) we want to make this fully project mysql based.
-But we currently don't have to since the ``SG`` runs pretty rarely but a v2 is definitely in the pipeline.
+### Changes in v2
+- Summoners get stored in a database
+- Much better logging
+- Multi region support
+- Summoners that are no longer platinum or higher will get removed 
 
 ### How does it work?
 
@@ -31,33 +33,17 @@ the League api and get all the summoners in it. We always filter for duplicates 
 be Platinum or higher in multiple queues (FlexQ and SoloQ).
 
 ### The result
-The result should look somewhat like this. We plan to save all the data in a database and update it occasionally. 
-But since summoners usually stick around in their current league or managed to get promoted this data is a good
-baseline for further processing. To reduce the amount of api calls and speed up the ``GG`` we plan to filter
+The result should look somewhat like this.
+ 
+| platformId   | summonerId  | rank  | tier      | playerId  |
+| ------------ |:-----------:|:-----:|:---------:|----------:|
+| EUW1         | 12345678    | I     | PLATINUM  | 1         |
+| EUW1         | 12345678    | V     | DIAMOND   | 2         | 
+| NA1          | 12345678    | III   | MASTER    | 3         | 
+ 
+
+We save all the data in a database and update it occasionally. 
+To reduce the amount of api calls and speed up the ``GG`` we plan to filter
 the summoners further. For example we only include players that played in the last 30 days to reduce "dead" calls
 for new games from them. Or we filter for players that play a reasonable amount of games in a given time like
 5 or more games in 30 days.
-````json
-{
-  "data": [
-  {
-    "platformId": "EUW1",
-    "summonerId": 12345678,
-    "rank": "I",
-    "tier": "PLATINUM"
-  },
-  {
-    "platformId": "EUW1",
-    "summonerId": 12345678,
-    "rank": "I",
-    "tier": "DIAMOND"
-  },
-  {
-    "platformId": "EUW1",
-    "summonerId": 12345678,
-    "rank": "III",
-    "tier": "PLATINUM"
-  }
-  ]
-}
-````
